@@ -1,0 +1,3 @@
+The goal of the semester project is to carry out scientific or applied research that extends an existing personalised machine learning method, and to present the results as a short scientific paper. The main focus is on recommender systems, although the same ideas can be applied in many other fields.
+
+Your project must start from a paper published in the research track (full or short paper) of one of the following conferences in 2024, 2025 or 2026: RecSys, KDD, CIKM, WWW (The Web Conference) or another A* machine learning conference. You are expected to extend this work, for example by improving its accuracy, efficiency or applicability, or by applying it to a new setting. The extension should be original and clearly evaluated against the base paper.
