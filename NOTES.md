@@ -59,3 +59,6 @@
  - Project is mainly focused on the architecture and the text encoders arent studied deeply
  - I will try to study more how the instruction based encoders compare to general purpose ones 
  - and I will study how the different embedding space dimensions affect the performance
+
+ ## Bonus 
+ - trying to use different kind of graph aggregator than is proposed in the paper
