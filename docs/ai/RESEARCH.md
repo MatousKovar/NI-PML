@@ -108,27 +108,88 @@ Do instruction-tuned item embeddings improve recommendation quality over general
 
 ### Minimal experiment
 
-Use one CARec-supported dataset first, preferably Amazon Electronics. Compare:
-
-| Encoder group | Example encoder |
-| --- | --- |
-| General-purpose | `all-MiniLM-L6-v2` or E5 |
-| Instruction-tuned | `instructor-xl` |
-
-Use the same CARec pipeline, same text fields, same train/validation/test split, and same random seeds. Reduce every encoder to the same target dimensions, for example 64, 128, and 256, using PCA fitted only on the training-side item embeddings. If the selected encoders share a 768-dimensional native output, add 768 as the native-dimension condition. Do not expand a smaller encoder to 768 and treat that as an equivalent comparison. Report Recall@10 and NDCG@10 separately for warm and cold items.
+Use one CARec-supported dataset first, preferably Amazon Electronics. The current encoder shortlist is recorded in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md). Use the same CARec pipeline, item text, split, and random seeds. Compare at shared dimensions 64, 128, 256, and 384 using PCA fitted only on training-item embeddings. Report 768 separately for encoders that support it. Do not expand a smaller encoder and treat that as an equivalent comparison. Report Recall@10 and NDCG@10 separately for warm and cold items.
 
 The improvement over CARec is a controlled study of the encoder family and dimension. CARec supplies the recommendation framework and a useful initial comparison; your work must make the comparison fair enough to ask whether instruction tuning itself remains useful at smaller dimensions.
 
 ### Important fairness rule
 
-Do not compare a 384-dimensional MiniLM vector with a 768-dimensional Instructor vector and attribute every difference to instruction tuning. Either project both down to common dimensions or report native dimensions separately. The main comparison should use equal dimensions. If you want to include 768, choose two encoders that natively produce 768-dimensional vectors.
+Do not compare a 384-dimensional MiniLM vector with a 768-dimensional Instructor vector and attribute every difference to instruction tuning. Compare selected encoders at equal dimensions, up to 384 for the full shortlist. Report 768 as a separate condition for encoders that support it.
 
 ### Suggested extensions, in order
 
 1. General-purpose versus instruction-tuned embeddings on Amazon Electronics.
-2. Dimension ablation at 64, 128, and 256, with 768 only when both encoders naturally support it.
+2. Dimension ablation at 64, 128, 256, and 384, with 768 reported separately for compatible encoders.
 3. Warm versus cold-item results.
 4. A second dataset, preferably Yelp or Amazon Office Products.
 5. Optional: compare PCA with a small learned linear projection.
 
 Do not train an LLM. Generate the item embeddings once, cache them, and train only the recommender and small projection layers. This keeps the project feasible with limited computational resources.
+
+## Milestone: related work, motivation, novelty, and baselines
+
+Date: 2026-10-07
+
+### Related work to cover
+
+Keep the review focused on the connection between text encoders and recommendation:
+
+1. **Text embeddings in recommendation and cold start.** CARec aligns semantic item vectors with collaborative signals and evaluates warm and cold items. Its encoder ablation includes `instructor-xl`, `all-MiniLM-L6-v2`, `all-mpnet-base-v2`, BGE, and BERT, but the paper's main contribution is collaborative alignment. The encoder ablation is not a controlled study of instruction conditioning or vector dimension. [CARec, CIKM 2024](https://doi.org/10.1145/3627673.3679535) · [paper PDF](https://yangliangwei.github.io/publication/cikm2024_carec/CIKM2024_CARec.pdf)
+2. **Metadata encoders in cold-start recommendation.** MARec compares TF-IDF, Sentence-Transformer, and Falcon-derived metadata representations. This shows that pretrained text embeddings have already been tested in recommendation, so the project should not claim that simply adding an LLM embedding is new. [MARec, RecSys 2024](https://doi.org/10.1145/3640457.3688125) · [paper PDF](https://assets.amazon.science/5f/3e/d92eda32446891e927ccb0a63b06/marec-metadata-alignment-for-cold-start-recommendation.pdf)
+3. **Instruction-conditioned encoders.** INSTRUCTOR embeds text together with a task and domain instruction and evaluates the resulting vectors on general embedding tasks. It explains what an instruction-based encoder does, but does not evaluate recommender datasets. [INSTRUCTOR, Findings of ACL 2023](https://aclanthology.org/2023.findings-acl.71/)
+4. **General-purpose encoders.** E5 learns general text embeddings with weakly supervised contrastive pretraining and evaluates them on retrieval and embedding benchmarks. It is useful background for the general-purpose side of the comparison. [E5 paper](https://arxiv.org/abs/2212.03533)
+5. **Content initialization and compression.** Let It Go? Not Quite uses E5 item text embeddings, standardization, and PCA to fit content vectors to the recommender's embedding dimension, then evaluates cold and warm items. This supports the feasibility of the proposed compression pipeline. [RecSys 2025 paper](https://doi.org/10.1145/3705328.3748038) · [open paper](https://arxiv.org/html/2507.19473)
+6. **Embedding-size work in recommendation.** Existing work such as PEP and CIESS studies the size of trainable recommender feature or ID embedding tables, largely to reduce model memory. That is related background, but it is a different object from compressing a frozen, pretrained text vector used to represent an item. [PEP, ICLR 2021](https://openreview.net/forum?id=vQzcqQWIS0q) · [CIESS, SIGIR 2023](https://doi.org/10.1145/3539618.3591653)
+
+### Motivation
+
+Item text can provide information about an item when its interaction history is sparse or absent. Prior recommendation papers use pretrained text encoders, but general embedding benchmarks do not establish which encoder works best for personalized ranking. The choice also has a resource cost: larger item vectors require more storage and scoring memory. This motivates measuring recommendation quality and resource use together, including a cold-item evaluation.
+
+### Provisional novelty claim
+
+Do not claim that text embeddings, instruction-based embeddings, cold-start recommendation, or embedding-size optimization are individually new. The working contribution is a controlled empirical extension of CARec: compare selected general-purpose and instruction-conditioned item encoders at the same final dimensions within the same recommender and data split, then report warm-item and cold-item ranking quality alongside embedding storage and runtime.
+
+This is a candidate contribution, not a claim that no prior paper has done it. Before the final report, search for closer work that directly compares instruction-conditioned and general-purpose text encoders as recommender item vectors across matched dimensions. If the encoder backbones or training recipes differ, describe the result as a comparison of selected models, not as a causal estimate of instruction tuning alone.
+
+### Baseline plan
+
+Use a small set tied directly to the research question:
+
+- An ID-only collaborative model, preferably the LightGCN baseline used by CARec, gives an interaction-only reference. It cannot represent unseen item IDs without an explicit cold-item handling rule, so report that limitation clearly.
+- The same text-aware recommender with selected general-purpose and instruction-conditioned encoders is the main comparison. Keep the model, text fields, split, and training settings fixed.
+- Repeat the selected encoder conditions at common final dimensions of 64, 128, 256, and 384, using the same PCA procedure. Report 768 separately for compatible encoders.
+- Treat the full CARec result as a reference or reproduction target if implementation time permits. CARec compares many recommender baselines, including NeuMF, DirectAU, NGCF, PinSage, LightGCN, SimpleX, and NCL; reproducing all of them is not needed to answer the narrower encoder question.
+
+Report Recall@10 and NDCG@10 separately for warm and cold items, plus vector storage and embedding-generation/scoring time. Keep model choice and dimension as separate factors in the results table.
+
+## Milestone draft status
+
+Date: 2026-10-12
+
+The manuscript now contains a shorter introduction and concise related-work, motivation, novelty, and baseline sections. The novelty is framed as a controlled matched-dimension extension, since CARec already compares several text encoders. The open decisions above remain unresolved.
+
+## Encoder candidates for Apple Silicon
+
+Date: 2026-10-12
+
+- `intfloat/e5-base-v2` is a general-purpose English encoder with 768-dimensional output and about 0.1B parameters. Its model card recommends the `query:` prefix when embeddings are used as model features. [Model card](https://huggingface.co/intfloat/e5-base-v2)
+- `hkunlp/instructor-base` accepts task instructions and has a 768-dimensional T5-base configuration. It is a smaller alternative to CARec's `instructor-xl`, so using it changes the exact encoder while retaining the CARec recommendation framework. [Model card](https://huggingface.co/hkunlp/instructor-base) · [configuration](https://huggingface.co/hkunlp/instructor-base/blob/main/config.json)
+- PyTorch provides an MPS backend for Apple GPUs through Metal. This supports local inference without CUDA, but actual model/library compatibility and runtime should be checked with a small pilot. [PyTorch MPS documentation](https://docs.pytorch.org/docs/stable/mps.html)
+
+The earlier E5-base-v2/INSTRUCTOR-base pair remains a possible compact comparison, but no final encoder pair has been selected. The expanded candidate shortlist and dimension plan are in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md).
+
+## Hugging Face popularity snapshot
+
+Date checked: 2026-10-12. Counts below are the Hugging Face model-card "downloads last month" values. They are a visibility signal only, not evidence of quality or active users.
+
+| Group | Model | Downloads last month | Notes |
+| --- | --- | ---: | --- |
+| General-purpose | [`all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | 221,180,273 | 384-dimensional output; 22.7M parameters. |
+| General-purpose | [`bge-small-en-v1.5`](https://huggingface.co/BAAI/bge-small-en-v1.5) | 60,146,924 | 384-dimensional output; 33.4M parameters. BGE v1.5 is designed to work without an instruction, though the card also gives an optional search prompt. |
+| General-purpose | [`all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) | 18,171,463 | 768-dimensional output; about 0.1B parameters. |
+| General-purpose | [`e5-base-v2`](https://huggingface.co/intfloat/e5-base-v2) | 824,115 | 768-dimensional output; about 0.1B parameters. The model card recommends `query:` for embeddings used as features. |
+| Instruction-aware | [`Qwen3-Embedding-0.6B`](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) | 8,521,952 | 0.6B parameters; supports user-defined output dimensions from 32 to 1024. |
+| Instruction-based | [`multilingual-e5-large-instruct`](https://huggingface.co/intfloat/multilingual-e5-large-instruct) | 1,555,439 | 0.6B parameters; 1024-dimensional output; its card requires an instruction for query inputs. |
+| Instruction-based | [`INSTRUCTOR-large`](https://huggingface.co/hkunlp/instructor-large) | 253,153 | Instruction-finetuned encoder; provide a task-specific instruction with each item title. |
+
+CARec's exact `INSTRUCTOR-XL` checkpoint is an optional reference, not part of the popularity shortlist. Its model card showed 9,245 downloads last month at the same check. `INSTRUCTOR-base` remains a smaller fallback. All counts can change; recheck them before writing the final report.

@@ -26,12 +26,11 @@ Keep the recommender, item text, data split, and evaluation fixed. Change only:
 First experiment:
 
 - dataset: Amazon Electronics;
-- general-purpose encoder: `all-MiniLM-L6-v2` or E5;
-- instruction-based encoder: `instructor-xl`;
-- target dimensions: 64, 128, and 256; optionally 768 when both selected encoders naturally produce 768-dimensional vectors;
+- encoder candidates and Hugging Face popularity snapshot: [`THIRD_MILESTONE.md`](THIRD_MILESTONE.md);
+- target dimensions: 64, 128, 256, and 384 for the shared comparison; report 768 separately only for encoders that support it;
 - metrics: Recall@10 and NDCG@10 for warm and cold items.
 
-Use PCA or a learned linear projection to put all encoders into the same target dimension. Cache the embeddings and do not train an LLM.
+Use the same PCA procedure, fitted on training-item vectors only, to put the selected encoders into the same target dimension. Cache the embeddings and do not train an LLM. The final encoder subset remains open pending an MPS and memory pilot.
 
 ## Main supporting papers
 
