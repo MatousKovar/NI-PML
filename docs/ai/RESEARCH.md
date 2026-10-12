@@ -193,3 +193,13 @@ Date checked: 2026-10-12. Counts below are the Hugging Face model-card "download
 | Instruction-based | [`INSTRUCTOR-large`](https://huggingface.co/hkunlp/instructor-large) | 253,153 | Instruction-finetuned encoder; provide a task-specific instruction with each item title. |
 
 CARec's exact `INSTRUCTOR-XL` checkpoint is an optional reference, not part of the popularity shortlist. Its model card showed 9,245 downloads last month at the same check. `INSTRUCTOR-base` remains a smaller fallback. All counts can change; recheck them before writing the final report.
+
+## CARec code and experiment structure
+
+Date checked: 2026-10-12.
+
+The [official CARec repository](https://github.com/ChenMetanoia/CARec) documents an environment based on Python 3.8.5, PyTorch 1.12.1, RecBole 1.1.1, and CUDA 11.3.1. Its README says to download Amazon data separately. The [runner](https://github.com/ChenMetanoia/CARec/blob/main/run_collabcontex.py) maps a short, hardcoded list of encoder names to 384- or 768-dimensional inputs, then sets CARec's `embedding_size` from that input size. Encoder choice and recommender dimension are therefore coupled in the published runner.
+
+The repository's visible top-level file list has no license file. Do not copy or modify its source inside this project until reuse terms are confirmed. The CARec source is not present locally; GitHub was unreachable from the shell during this check, so no code was downloaded.
+
+**Implementation recommendation, not yet a project decision:** keep experiment runs in a small Python runner with explicit encoder, target dimension, seed, and data-split settings. Cache frozen item embeddings, reduce them to the selected target dimension, and pass them through one embedding-loading interface to CARec. Use a notebook only to inspect results and make plots. Keep downloaded CARec files separate and unchanged if reuse permission is confirmed. Unit tests should check embedding shape, item-ID alignment, and adapter behavior, not launch full experiments.

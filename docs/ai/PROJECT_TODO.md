@@ -16,11 +16,13 @@ Last updated: 2026-10-12
 - [ ] Confirm available CPU/GPU, RAM, storage, deadline, and whether external model APIs are allowed.
 - [ ] Confirm CARec's exact research-track classification with the course requirements or instructor.
 - [ ] Decide whether the final study uses CARec directly or a smaller compatible recommender implementation.
+- [ ] Confirm permission to reuse the CARec repository code. Its visible top-level listing has no license file; do not vendor or modify it until reuse terms are clear. See [CARec code findings](RESEARCH.md#carec-code-and-experiment-structure).
 - [ ] Pilot the seven encoder candidates in [THIRD_MILESTONE.md](../../THIRD_MILESTONE.md), then choose the final subset after checking MPS compatibility, runtime, and memory.
 - [ ] Confirm CARec's cold-item split and whether to rerun LightGCN; see [THIRD_MILESTONE.md](../../THIRD_MILESTONE.md).
 
 ## Planned experiments
 
+- [x] Add a starter notebook at [carec_encoder_comparison.ipynb](carec_encoder_comparison.ipynb) with the study outline, imports, and MPS-first device selection.
 - [ ] Reproduce an ID-based and a text-embedding baseline on Amazon Electronics.
 - [ ] Compare the selected general-purpose and instruction-based encoders using the same item text and fixed CARec setup.
 - [ ] Evaluate shared dimensions 64, 128, 256, and 384 using the same PCA procedure; report 768 separately only for encoders that support it.
