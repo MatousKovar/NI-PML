@@ -4,32 +4,20 @@ Last updated: 2026-10-12
 
 ## Confirmed direction
 
-- [x] Select the working topic: general-purpose versus instruction-based item embeddings, with an embedding-size study.
-- [x] Draft the related-work, motivation, novelty, and baseline milestone in the manuscript; shorten the introduction.
-- [x] Draft the proposed methodology and evaluation plan in [THIRD_MILESTONE.md](../../THIRD_MILESTONE.md); encoder and baseline choices remain open.
-- [ ] Confirm CARec as the base paper; its encoder comparison is relevant but is not a controlled instruction-tuning study.
-- [ ] Confirm with the instructor whether the CIKM 2024 proceedings entry satisfies the required research-track classification.
-- [x] Identify a public first dataset: Amazon Electronics.
+- [x] Working topic: compare general-purpose and instruction-based item embeddings, including embedding size.
+- [x] First dataset: Amazon Electronics.
+- [x] Draft the related-work, motivation, novelty, and baseline milestone.
+- [x] Draft the proposed methodology and evaluation in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md).
+- [x] Restore the requested CARec encoder-comparison notebook scaffold at [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb).
 
-## Open decisions
+## Open decisions and next steps
 
-- [ ] Confirm available CPU/GPU, RAM, storage, deadline, and whether external model APIs are allowed.
-- [ ] Confirm CARec's exact research-track classification with the course requirements or instructor.
-- [ ] Decide whether the final study uses CARec directly or a smaller compatible recommender implementation.
-- [ ] Confirm permission to reuse the CARec repository code. Its visible top-level listing has no license file; do not vendor or modify it until reuse terms are clear. See [CARec code findings](RESEARCH.md#carec-code-and-experiment-structure).
-- [ ] Pilot the seven encoder candidates in [THIRD_MILESTONE.md](../../THIRD_MILESTONE.md), then choose the final subset after checking MPS compatibility, runtime, and memory.
-- [ ] Confirm CARec's cold-item split and whether to rerun LightGCN; see [THIRD_MILESTONE.md](../../THIRD_MILESTONE.md).
-
-## Planned experiments
-
-- [x] Add a starter notebook at [carec_encoder_comparison.ipynb](carec_encoder_comparison.ipynb) with the study outline, imports, and MPS-first device selection.
-- [ ] Reproduce an ID-based and a text-embedding baseline on Amazon Electronics.
-- [ ] Compare the selected general-purpose and instruction-based encoders using the same item text and fixed CARec setup.
-- [ ] Evaluate shared dimensions 64, 128, 256, and 384 using the same PCA procedure; report 768 separately only for encoders that support it.
-- [ ] Report Recall@10 and NDCG@10 for warm and cold items.
-- [ ] Record embedding storage, preprocessing time, training time, and inference/scoring time.
-- [ ] Add a second public dataset only if the first experiment is stable.
-
-## Possible final contribution
-
-A controlled analysis of whether instruction tuning still helps when item embeddings are compressed to small dimensions. The result should include accuracy, cold-start behaviour, and resource cost.
+- [ ] Confirm with the instructor that CARec's CIKM 2024 paper is a research-track paper.
+- [ ] Confirm permission to reuse CARec code. Its visible GitHub root listing had no license file when checked on 2026-10-12. Do not vendor or modify it until reuse terms are clear. See [`RESEARCH.md`](RESEARCH.md#carec-code-and-experiment-structure).
+- [ ] Decide whether to use CARec directly or implement a smaller compatible recommender if code reuse is unavailable.
+- [ ] Record available RAM, disk space, deadline, and API restrictions. The M4 Pro machine is known; MPS compatibility and runtime still need a pilot.
+- [ ] Pilot a small encoder subset and choose the final models based on memory and runtime.
+- [ ] Verify CARec's exact data split and cold-item definition. Decide whether to rerun LightGCN on the same split.
+- [ ] Run the first Amazon Electronics baseline, then compare selected encoders at 64, 128, 256, and 384 dimensions. Report 768 separately only for compatible models.
+- [ ] Report warm/cold Recall@10 and NDCG@10, embedding storage, and generation/training/scoring time.
+- [ ] Add a second dataset only if the first experiment is stable.

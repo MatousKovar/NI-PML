@@ -203,3 +203,9 @@ The [official CARec repository](https://github.com/ChenMetanoia/CARec) documents
 The repository's visible top-level file list has no license file. Do not copy or modify its source inside this project until reuse terms are confirmed. The CARec source is not present locally; GitHub was unreachable from the shell during this check, so no code was downloaded.
 
 **Implementation recommendation, not yet a project decision:** keep experiment runs in a small Python runner with explicit encoder, target dimension, seed, and data-split settings. Cache frozen item embeddings, reduce them to the selected target dimension, and pass them through one embedding-loading interface to CARec. Use a notebook only to inspect results and make plots. Keep downloaded CARec files separate and unchanged if reuse permission is confirmed. Unit tests should check embedding shape, item-ID alignment, and adapter behavior, not launch full experiments.
+
+## Notebook scaffold
+
+Date: 2026-10-12.
+
+The requested starter notebook is [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb). It has the project introduction, CARec links, workflow outline, imports, and MPS-first device selection. It does not load data or run a model. The final choice between notebook-based experiments and a separate runner remains open; revisit it after the first baseline.
