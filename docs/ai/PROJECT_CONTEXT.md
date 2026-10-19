@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-10-17
+Last updated: 2026-10-19
 
 ## Assignment
 
@@ -19,7 +19,7 @@ The working source paper is [CARec: Collaborative Alignment for Recommendation](
 - Compare shared dimensions 64, 128, 256, and 384. Report 768 separately for compatible encoders.
 - Fit the same PCA procedure on training-item embeddings only. Freeze and cache the text embeddings.
 - Report Recall@10 and NDCG@10 on warm and cold items, plus storage and runtime.
-- The model shortlist and detailed protocol are in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md). Research and source links are in [`RESEARCH.md`](RESEARCH.md).
+- The model shortlist and detailed protocol are in [`third_milestone.md`](../../third_milestone.md). Research and source links are in [`RESEARCH.md`](RESEARCH.md).
 
 These are working plans. The final encoder subset, exact cold-item protocol, and whether to use CARec code directly remain open.
 
@@ -53,3 +53,11 @@ The user confirmed a single dataset and wants to download and inspect it and set
 - `benchmarks.check_environment` verifies imports, bounded data reads, graph operations, and a tiny CPU model. It does not verify the complete training/evaluation pipeline or download encoder weights. Setup and verification passed; see [`../../README.md`](../../README.md).
 
 The pip-based setup was verified against the existing `.venv` after conversion. Dependency checks, CARec imports, CPU smoke checks, and bounded dataset reads passed. This did not rebuild the environment from scratch or rerun GPU checks.
+
+## Methodology draft workflow, 2026-10-19
+
+The user wants to build [`third_milestone.md`](../../third_milestone.md) collaboratively, then shorten and rewrite it themselves. The expanded English working draft follows the existing milestone language and marks unconfirmed settings as proposals. The older shortlist is preserved in an appendix. It does not confirm a final encoder subset or claim completed experiments.
+
+## Minimum encoder coverage, 2026-10-19
+
+The user requires at least three instruction-conditioned and three non-instruction models. The proposed six checkpoints in `third_milestone.md` are MiniLM-L6-v2, MPNet-base-v2, E5-base-v2, Qwen3-Embedding-0.6B, multilingual E5-large-instruct, and INSTRUCTOR-base. The minimum group sizes are confirmed; specific checkpoint feasibility is not. Required format prefixes such as E5's `query:` are distinct from free-form task instructions. Native dimension reduction remains a separate open protocol choice.

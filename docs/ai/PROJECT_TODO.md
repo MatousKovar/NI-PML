@@ -1,13 +1,13 @@
 # Project TODO
 
-Last updated: 2026-10-17
+Last updated: 2026-10-19
 
 ## Confirmed direction
 
 - [x] Working topic: compare general-purpose and instruction-based item embeddings, including embedding size.
 - [x] Only dataset: Amazon Electronics, confirmed 2026-10-15.
 - [x] Draft the related-work, motivation, novelty, and baseline milestone.
-- [x] Draft the proposed methodology and evaluation in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md).
+- [x] Draft the proposed methodology and evaluation in [`third_milestone.md`](../../third_milestone.md).
 - [x] Restore the requested CARec encoder-comparison notebook scaffold at [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb).
 
 ## Open decisions and next steps
@@ -30,7 +30,7 @@ Last updated: 2026-10-17
 
 - [x] 2026-10-17: Raw Electronics reviews and metadata are present as uncompressed JSON files in `data/`.
 - [x] 2026-10-17: Read ten records per raw JSON file. Expected first-record fields, including `asin`, are present. Full ID coverage and data quality remain unchecked.
-- [ ] Agree on the proposed smaller set: MiniLM overlap baseline, E5-base-v2, Qwen3-Embedding-0.6B, and optionally multilingual E5-large-instruct after a pilot.
+- [x] 2026-10-19: User requires at least three instruction-conditioned and three non-instruction encoders, superseding the earlier three-model minimum.
 - [ ] Separate author-reported numbers from own results. Decide on one local overlap baseline rather than reproducing every model in the paper.
 
 ## Environment setup, 2026-10-17
@@ -44,3 +44,12 @@ Last updated: 2026-10-17
 
 - [x] 2026-10-17: Replace uv configuration with `requirements.txt`, standard venv/pip setup, and updated notebook root detection. Preserve the installed environment and pinned library versions.
 - [x] Verify the pip-based setup against the existing environment, including dependency consistency and the environment smoke check.
+
+## Methodology milestone, 2026-10-19
+
+- [x] Expand and rename the working document to [`third_milestone.md`](../../third_milestone.md), preserving the earlier candidate pool in an appendix. It separates confirmed scope from proposed model selection, preprocessing, PCA, training, evaluation, and resource reporting. No experiments were run for this edit.
+- [ ] Review the draft together, starting with the encoder set and one local overlap baseline. The smaller shortlist, metadata text, PCA normalization, seeds, and detailed candidate pools remain proposals.
+- [ ] Resolve dimension-dependent recommender capacity, nominally warm items absent from training, and candidate masking before making controlled-comparison claims.
+- [ ] Discuss whether to keep common PCA, compare model-specific compression, or choose encoders with documented Matryoshka support. Qwen supports smaller outputs; MiniLM and E5-base-v2 do not document equivalent support. See the 2026-10-19 research note. No protocol change has been confirmed.
+
+- [ ] Pilot the six proposed checkpoints in `third_milestone.md`, including INSTRUCTOR-base instruction/text API compatibility. Replace infeasible models within their group to maintain the confirmed three-plus-three minimum. The proposed four-dimension/three-seed plan now totals 72 main training runs, plus three native MiniLM reference runs.

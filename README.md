@@ -1,6 +1,6 @@
 # NI-PML benchmarky
 
-Experimenty s textovými encodery a rozměrem item embeddingů v CARec. Jediným datasetem je Amazon Electronics 2018. Zadání je v [assignment.md](assignment.md), metodika v [THIRD_MILESTONE.md](THIRD_MILESTONE.md).
+Experimenty s textovými encodery a rozměrem item embeddingů v CARec. Jediným datasetem je Amazon Electronics 2018. Zadání je v [assignment.md](assignment.md), metodika v [third_milestone.md](third_milestone.md).
 
 ## Prostředí
 

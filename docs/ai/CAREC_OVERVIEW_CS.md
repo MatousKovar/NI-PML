@@ -12,7 +12,7 @@ Pro nás je užitečné místo před vstupem do doporučovacího modelu. Tam vym
 
 Doporučuji nejdřív rozchodit jednu datovou cestu a jeden malý encoder. Spouštět hned celou tabulku modelů by teď především násobilo problémy s daty a evaluací.
 
-Zdroje: [model](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/model/collabcontex.py), [runner](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/run_collabcontex.py), naše [metodika](../../THIRD_MILESTONE.md).
+Zdroje: [model](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/model/collabcontex.py), [runner](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/run_collabcontex.py), naše [metodika](../../third_milestone.md).
 
 ## 2. Co už máme lokálně
 
@@ -20,7 +20,7 @@ Zdroje: [model](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5
 | --- | --- |
 | `assignment.md` | Požadavky předmětu a povinnost rozšířit existující metodu. |
 | `topic.md` | Pracovní výzkumná otázka a vybraný paper. |
-| `SECOND_MILESTONE.md`, `THIRD_MILESTONE.md` | Related work a návrh experimentu. |
+| `SECOND_MILESTONE.md`, `third_milestone.md` | Related work a návrh experimentu. |
 | `6ac65ba1a33e4f01bca06b79/kovarm46.tex` | Rukopis článku; bibliografie je vedle v `.bib`. |
 | `src/carec_encoder_comparison.ipynb` | Zatím úvod, importy a výběr zařízení s prioritou MPS. |
 | `docs/ai/` | Rozhodnutí, ověřené zdroje a další práce. |

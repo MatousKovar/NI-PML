@@ -26,7 +26,7 @@ Keep the recommender, item text, data split, and evaluation fixed. Change only:
 First experiment:
 
 - dataset: Amazon Electronics;
-- encoder candidates and Hugging Face popularity snapshot: [`THIRD_MILESTONE.md`](THIRD_MILESTONE.md);
+- encoder candidates and Hugging Face popularity snapshot: [`third_milestone.md`](third_milestone.md);
 - target dimensions: 64, 128, 256, and 384 for the shared comparison; report 768 separately only for encoders that support it;
 - metrics: Recall@10 and NDCG@10 for warm and cold items.
 

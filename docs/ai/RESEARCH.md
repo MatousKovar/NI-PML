@@ -108,7 +108,7 @@ Do instruction-tuned item embeddings improve recommendation quality over general
 
 ### Minimal experiment
 
-Use one CARec-supported dataset first, preferably Amazon Electronics. The current encoder shortlist is recorded in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md). Use the same CARec pipeline, item text, split, and random seeds. Compare at shared dimensions 64, 128, 256, and 384 using PCA fitted only on training-item embeddings. Report 768 separately for encoders that support it. Do not expand a smaller encoder and treat that as an equivalent comparison. Report Recall@10 and NDCG@10 separately for warm and cold items.
+Use one CARec-supported dataset first, preferably Amazon Electronics. The current encoder shortlist is recorded in [`third_milestone.md`](../../third_milestone.md). Use the same CARec pipeline, item text, split, and random seeds. Compare at shared dimensions 64, 128, 256, and 384 using PCA fitted only on training-item embeddings. Report 768 separately for encoders that support it. Do not expand a smaller encoder and treat that as an equivalent comparison. Report Recall@10 and NDCG@10 separately for warm and cold items.
 
 The improvement over CARec is a controlled study of the encoder family and dimension. CARec supplies the recommendation framework and a useful initial comparison; your work must make the comparison fair enough to ask whether instruction tuning itself remains useful at smaller dimensions.
 
@@ -176,7 +176,7 @@ Date: 2026-10-12
 - `hkunlp/instructor-base` accepts task instructions and has a 768-dimensional T5-base configuration. It is a smaller alternative to CARec's `instructor-xl`, so using it changes the exact encoder while retaining the CARec recommendation framework. [Model card](https://huggingface.co/hkunlp/instructor-base) · [configuration](https://huggingface.co/hkunlp/instructor-base/blob/main/config.json)
 - PyTorch provides an MPS backend for Apple GPUs through Metal. This supports local inference without CUDA, but actual model/library compatibility and runtime should be checked with a small pilot. [PyTorch MPS documentation](https://docs.pytorch.org/docs/stable/mps.html)
 
-The earlier E5-base-v2/INSTRUCTOR-base pair remains a possible compact comparison, but no final encoder pair has been selected. The expanded candidate shortlist and dimension plan are in [`THIRD_MILESTONE.md`](../../THIRD_MILESTONE.md).
+The earlier E5-base-v2/INSTRUCTOR-base pair remains a possible compact comparison, but no final encoder pair has been selected. The expanded candidate shortlist and dimension plan are in [`third_milestone.md`](../../third_milestone.md).
 
 ## Hugging Face popularity snapshot
 
@@ -236,3 +236,17 @@ The user explicitly requested local CARec imports. An ignored checkout at `exter
 The raw files are already uncompressed and total 22,504,102,103 bytes. A ten-record sample per file parsed successfully; initial fields match the expected Amazon interaction/metadata schema. No complete dataset scan, preprocessing, encoder download, or benchmark was run. `README.md` documents restore commands and remaining checkpoint, Trainer, and evaluation checks.
 
 The requirements-based setup passed on the existing environment with package downloads disabled. `pip check` reported no broken requirements; the environment smoke check passed on CPU and read ten records per dataset file. MPS was unavailable inside this verification sandbox; the earlier MPS result remains separate. No fresh installation was tested.
+
+## Alternatives to PCA, 2026-10-19
+
+The [Qwen3-Embedding-0.6B model card](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) explicitly lists Matryoshka representation learning support and output dimensions from 32 to 1024. This allows shorter representations without fitting PCA. The [MiniLM card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) describes a 384-dimensional model, and the [E5-base-v2 card](https://huggingface.co/intfloat/e5-base-v2) describes a 768-dimensional model; neither card documents Matryoshka support for those checkpoints. Arbitrary vector slicing should therefore not be treated as their equivalent trained dimension-reduction feature.
+
+PCA is a proposed common reduction procedure, not an assignment requirement. Using model-specific compression is also a valid study, but would compare encoder-plus-compression systems. The user asked about alternatives; no replacement protocol or new encoder selection has been agreed, and the milestone draft has not been changed on this basis.
+
+## Six-model candidate set, 2026-10-19
+
+The user confirmed a minimum of three instruction-conditioned and three non-instruction models. The methodology proposes [MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), [MPNet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2), and [E5-base-v2](https://huggingface.co/intfloat/e5-base-v2) without a free-form task instruction. E5 retains its documented `query:` feature prefix.
+
+Instruction candidates are [Qwen3-Embedding-0.6B](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B), [multilingual E5-large-instruct](https://huggingface.co/intfloat/multilingual-e5-large-instruct), and [INSTRUCTOR-base](https://huggingface.co/hkunlp/instructor-base). The INSTRUCTOR card documents instruction/text pairs through `InstructorEmbedding`; its [output configuration](https://huggingface.co/hkunlp/instructor-base/blob/main/2_Dense/config.json) specifies 768 output features. This differs from the XL checkpoint used by CARec. No new dependency installation, weight download, or inference test was performed.
+
+Model cards were checked for input conventions and documented output dimensions. Grouping is operational: task instructions versus standard model formatting. It does not establish that all other training differences are controlled. The specific checkpoint choices remain proposed pending compatibility and resource pilots; the minimum group sizes are confirmed.
