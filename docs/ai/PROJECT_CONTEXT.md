@@ -19,7 +19,7 @@ The working source paper is [CARec: Collaborative Alignment for Recommendation](
 - Compare shared dimensions 64, 128, 256, and 384. Report 768 separately for compatible encoders.
 - Fit the same PCA procedure on training-item embeddings only. Freeze and cache the text embeddings.
 - Report Recall@10 and NDCG@10 on warm and cold items, plus storage and runtime.
-- The model shortlist and detailed protocol are in [`third_milestone.md`](../../third_milestone.md). Research and source links are in [`RESEARCH.md`](RESEARCH.md).
+- Read [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) before implementing preprocessing, encoders, reduction, training, evaluation, or reporting. It holds the complete AI working plan. `third_milestone.md` is the user's personal draft and stays unchanged unless explicitly requested. Research and source links are in [`RESEARCH.md`](RESEARCH.md).
 
 These are working plans. The final encoder subset, exact cold-item protocol, and whether to use CARec code directly remain open.
 
@@ -61,3 +61,7 @@ The user wants to build [`third_milestone.md`](../../third_milestone.md) collabo
 ## Minimum encoder coverage, 2026-10-19
 
 The user requires at least three instruction-conditioned and three non-instruction models. The proposed six checkpoints in `third_milestone.md` are MiniLM-L6-v2, MPNet-base-v2, E5-base-v2, Qwen3-Embedding-0.6B, multilingual E5-large-instruct, and INSTRUCTOR-base. The minimum group sizes are confirmed; specific checkpoint feasibility is not. Required format prefixes such as E5's `query:` are distinct from free-form task instructions. Native dimension reduction remains a separate open protocol choice.
+
+## Document ownership, 2026-10-19
+
+The user requested a separate complete plan for AI assistance. [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) is now the implementation-plan reference. Keep [`third_milestone.md`](../../third_milestone.md) as the user's personal document; do not automatically edit it when planning or updating AI documentation. The new plan consolidates confirmed scope, proposed parameters, open choices, known integration issues, and completion criteria. Creating it did not run experiments or settle the remaining protocol choices.

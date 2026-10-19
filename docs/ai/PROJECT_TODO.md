@@ -12,6 +12,8 @@ Last updated: 2026-10-19
 
 ## Open decisions and next steps
 
+For implementation details and completion criteria, read [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md). Keep the user's `third_milestone.md` unchanged unless they request changes to it.
+
 - [x] 2026-10-15: Prepare a source-backed CARec walkthrough with repository map, training stages, split analysis, and illustrative snippets. See [`CAREC_OVERVIEW_CS.md`](CAREC_OVERVIEW_CS.md).
 - [ ] Choose whether to preserve upstream title + brand + category text or deliberately use titles only. Current title-only milestone wording does not describe upstream preprocessing.
 - [ ] Audit a tiny cold evaluation: candidate mask shape, cold-only candidates, user-vector recomputation, and history masking. Check the two-stage Trainer state and single-pair prediction path before a baseline.
@@ -53,3 +55,8 @@ Last updated: 2026-10-19
 - [ ] Discuss whether to keep common PCA, compare model-specific compression, or choose encoders with documented Matryoshka support. Qwen supports smaller outputs; MiniLM and E5-base-v2 do not document equivalent support. See the 2026-10-19 research note. No protocol change has been confirmed.
 
 - [ ] Pilot the six proposed checkpoints in `third_milestone.md`, including INSTRUCTOR-base instruction/text API compatibility. Replace infeasible models within their group to maintain the confirmed three-plus-three minimum. The proposed four-dimension/three-seed plan now totals 72 main training runs, plus three native MiniLM reference runs.
+
+## AI plan handoff, 2026-10-19
+
+- [x] Create [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) with the complete ordered plan, confirmed constraints, open choices, candidate checkpoints, artifacts, and verification criteria.
+- [ ] Start with bounded JSONL loading and data contracts, then settle sampling before freezing the split. Native reduction versus PCA and published-reference versus local-baseline interpretation remain open.
