@@ -62,3 +62,11 @@
 
  ## Bonus 
  - trying to use different kind of graph aggregator than is proposed in the paper
+
+
+ ---
+
+
+ ## CARec repostory
+ - important files:
+ **collabcontext.py** - training MLP, 

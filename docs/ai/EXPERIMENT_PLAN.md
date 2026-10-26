@@ -1,6 +1,6 @@
 # CARec experiment plan for AI assistance
 
-Updated: 2026-10-19. This is the complete working plan for implementation and experiment handoffs. It records both confirmed requirements and proposals; an open choice is not authorization to silently treat it as a final scientific decision.
+Updated: 2026-10-26. This is the complete working plan for implementation and experiment handoffs. It records both confirmed requirements and proposals; an open choice is not authorization to silently treat it as a final scientific decision.
 
 ## Read and maintain this plan
 
@@ -62,13 +62,31 @@ Routine implementation can proceed within confirmed scope. Ask about a scientifi
 | Non-instruction | [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | 384 | Standard item text; overlap with CARec. |
 | Non-instruction | [sentence-transformers/all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) | 768 | Standard item text; also present in CARec. |
 | Non-instruction | [intfloat/e5-base-v2](https://huggingface.co/intfloat/e5-base-v2) | 768 | Keep its documented `query:` prefix for feature inputs. |
-| Instruction-conditioned | [Qwen/Qwen3-Embedding-0.6B](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) | 1024 | Fixed task instruction in the documented format. |
-| Instruction-conditioned | [intfloat/multilingual-e5-large-instruct](https://huggingface.co/intfloat/multilingual-e5-large-instruct) | 1024 | Fixed task instruction; retrieval examples alone do not determine our recommendation instruction. |
-| Instruction-conditioned | [hkunlp/instructor-base](https://huggingface.co/hkunlp/instructor-base) | 768 | Instruction/text pairs through the documented INSTRUCTOR API. |
+| Instruction-conditioned | [Qwen/Qwen3-Embedding-0.6B](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) | 1024 | Compare with task instruction and without instruction. |
+| Instruction-conditioned | [intfloat/multilingual-e5-large-instruct](https://huggingface.co/intfloat/multilingual-e5-large-instruct) | 1024 | Compare with instruction and with a no-instruction ablation; pilot required. |
+| Instruction-conditioned | [hkunlp/instructor-base](https://huggingface.co/hkunlp/instructor-base) | 768 | Compare instruction/text pairs with empty-instruction pairs; pilot required. |
 
 “Non-instruction” means no free-form task instruction in this experiment. E5's required formatting prefix still applies. INSTRUCTOR-base differs from CARec's INSTRUCTOR-XL. Its compatibility with the installed libraries is untested; isolate any required dependency change rather than break the shared environment.
 
 Qwen documents Matryoshka support with dimensions 32–1024. Instruction conditioning and dimension flexibility are separate properties. The MiniLM and E5-base-v2 cards do not document equivalent trained truncation support. Do not treat arbitrary slicing as their supported replacement for PCA. Model-source verification and the INSTRUCTOR output configuration are linked in [RESEARCH.md](RESEARCH.md#six-model-candidate-set-2026-10-19).
+
+### Paired instruction variants, added 2026-10-26
+
+The user confirmed on 2026-10-26 that all three instruction candidates will be compared with and without instructions. Retain the six distinct checkpoints above and add these input conditions:
+
+| Checkpoint | With instruction | Without instruction | Evidence and status |
+| --- | --- | --- | --- |
+| Qwen3-Embedding-0.6B | A fixed recommendation-related instruction in the documented wrapper. | Plain item text with no instruction wrapper or automatically supplied prompt. | Both modes are documented by the [model card](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B); local inference is untested. |
+| Multilingual E5-large-instruct | A fixed task instruction using its `Instruct:`/`Query:` format. | Plain item text, omitting that wrapper and instruction. | Add as an ablation. Its [model card](https://huggingface.co/intfloat/multilingual-e5-large-instruct#faq) recommends instructions on query inputs; an unprompted document path exists, but that does not validate the recommendation setting. |
+| INSTRUCTOR-base | The documented `[instruction, item_text]` pair. | `["", item_text]`, preserving the same API and pooling path. | The [official tokenizer implementation](https://github.com/xlang-ai/instructor-embedding/blob/main/InstructorEmbedding/instructor.py) accepts string instruction fields without requiring nonempty content. Empty-instruction feasibility is inferred from code and still needs a local pilot. |
+
+These are input ablations of instruction-trained checkpoints, not additional non-instruction-trained models. Preserve the minimum of three distinct checkpoints in each original group. Removing the instruction does not reverse instruction tuning; this tests instruction use at inference within the recommendation pipeline.
+
+For each pair, fix checkpoint revision, source item text, item IDs, dimensions, pooling, precision, normalization, split, CARec architecture, and paired training seeds. Audit prompt defaults so the no-instruction condition really receives no task instruction. Keep required E5-base-v2 `query:` formatting in its original non-instruction condition; it is not part of these ablations. Select the task instruction before test evaluation and verify truncation so prompt length does not silently change the item content seen by the two conditions.
+
+Cache the two prompt modes separately and train CARec separately for each. Include `prompt_mode` and the actual formatted-input hash in cache and run identities. If using PCA, a comparison intended to hold the projection fixed needs the same fitted transform for both prompt modes. The training-only fit policy for such a shared transform is still open; record it before generating paired reduced caches.
+
+With all three added no-instruction variants, there are six checkpoints and nine encoder/input conditions. At four dimensions and three seeds this gives 108 main CARec training runs, plus three native MiniLM reference runs if retained. This supersedes the earlier 72-run estimate for the six original conditions. A pilot may identify infeasible ablations. Record the failure and resolve the affected condition with the user before reducing the confirmed paired-comparison scope; do not claim all variants have been validated.
 
 ## Implementation sequence
 
@@ -99,13 +117,13 @@ Completion criterion: all encoders can consume the same immutable split and item
 
 Sources: [upstream configuration](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/data/data_process_config_amazon_Electronics.yaml), [preprocessing](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/data/utils.py).
 
-### 3. Pilot the six encoders
+### 3. Pilot the six encoders and paired input modes
 
 Start with a small fixed batch, then a representative pilot subset. Use inference mode and evaluate MPS compatibility, batch size, precision, output shape, finite values, elapsed time, and memory. Follow each checkpoint's pooling and input formatting; write down exact instructions, token limits, tokenizer/model revisions, and normalization.
 
 Use one fixed recommendation-related instruction intent for the instruction group, adapted to each API. Choose it before test evaluation. Any prompt comparison uses validation only. Record token truncation rates where practical because equal source text does not imply equal retained tokens.
 
-Completion criterion: at least three candidates per group have a working inference path and measured resource estimate, or documented replacements are selected. A library import alone does not count as an inference pilot.
+Completion criterion: at least three candidates per group have a working inference path and measured resource estimate, or documented replacements are selected. Each added prompt mode is verified or marked infeasible, including empty INSTRUCTOR inputs and disabled prompt defaults. A library import alone does not count as an inference pilot.
 
 ### 4. Generate and cache native embeddings
 
@@ -156,7 +174,7 @@ Completion criterion: a real condition completes with validation-selected checkp
 
 ### 8. Run the experiment matrix
 
-The previous proposal was six encoders × four shared dimensions × three paired training seeds, 2023/2024/2025, with one fixed split. That is 72 main training runs. A three-seed native MiniLM reference adds three. The matrix and seeds remain provisional until reduction and compute decisions are made.
+The expanded proposal uses six checkpoints and nine encoder/input conditions, four shared dimensions, and three paired training seeds, 2023/2024/2025, with one fixed split. That is 108 main training runs if all prompt ablations pass their pilots. A three-seed native MiniLM reference adds three. The matrix and seeds remain provisional until reduction and compute decisions are made.
 
 Prefer retaining the required six-model coverage while negotiating the number of dimensions/seeds if the budget is too high. Confirm scope changes with the user. Reuse native embeddings across conditions, resume completed runs by configuration ID, and save logs/checkpoints/results outside versioned source. Treat failures as recorded outcomes rather than silently omit them.
 

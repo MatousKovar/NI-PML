@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-10-19
+Last updated: 2026-10-26
 
 ## Confirmed direction
 
@@ -60,3 +60,19 @@ For implementation details and completion criteria, read [`EXPERIMENT_PLAN.md`](
 
 - [x] Create [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) with the complete ordered plan, confirmed constraints, open choices, candidate checkpoints, artifacts, and verification criteria.
 - [ ] Start with bounded JSONL loading and data contracts, then settle sampling before freezing the split. Native reduction versus PCA and published-reference versus local-baseline interpretation remain open.
+
+## Manuscript draft, 2026-10-22
+
+- [x] Add a short plain-English proposed-methodology-and-evaluation section to `6ac65ba1a33e4f01bca06b79/kovarm46.tex`. Personal `third_milestone.md` was left unchanged. Reduction method remains open; no experiments were run.
+- [ ] Before final submission, reconcile the older Baselines paragraph, which still specifies INSTRUCTOR-XL, ID-only LightGCN, and a narrower dimension sweep, with the evolving experiment plan.
+
+The new section passed basic brace and citation-key checks. PDF compilation was unavailable because neither `pdflatex` nor `latexmk` is installed in the current shell.
+
+## Paired prompt conditions, 2026-10-26
+
+- [x] Add instructed/uninstructed conditions to the AI model list for Qwen3-Embedding-0.6B, multilingual E5-large-instruct, and INSTRUCTOR-base, distinguishing documented use from ablation proposals. Personal milestone is unchanged.
+- [ ] Pilot both modes, including explicit prompt-default removal and INSTRUCTOR empty-instruction handling. Record exact inputs and independent caches.
+- [ ] Fix a shared training-only PCA fit policy for prompt pairs if the comparison is meant to hold the fitted projection constant.
+- [ ] Rebudget the sweep for nine input conditions, provisionally 108 main runs at four dimensions and three seeds, plus three native MiniLM runs. Earlier six-condition estimates remain historical.
+
+- [x] 2026-10-26: Add all three instruction candidates with and without task instructions to the LaTeX methodology, including separate CARec training for each input setting. User confirmed this comparison scope. The personal milestone is unchanged.

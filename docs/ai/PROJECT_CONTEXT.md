@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-10-19
+Last updated: 2026-10-26
 
 ## Assignment
 
@@ -65,3 +65,9 @@ The user requires at least three instruction-conditioned and three non-instructi
 ## Document ownership, 2026-10-19
 
 The user requested a separate complete plan for AI assistance. [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) is now the implementation-plan reference. Keep [`third_milestone.md`](../../third_milestone.md) as the user's personal document; do not automatically edit it when planning or updating AI documentation. The new plan consolidates confirmed scope, proposed parameters, open choices, known integration issues, and completion criteria. Creating it did not run experiments or settle the remaining protocol choices.
+
+## Instruction-use ablations, 2026-10-26
+
+The user requested suitable encoders in both instructed and uninstructed modes. The AI plan now lists paired variants for Qwen3-Embedding-0.6B, multilingual E5-large-instruct, and INSTRUCTOR-base. Qwen documents both modes; the other two uninstructed variants are ablations requiring a pilot, with INSTRUCTOR empty-instruction support inferred from the official tokenizer code. Six distinct checkpoints remain, with nine input conditions if all ablations work. These variants do not replace the minimum of three distinct models in each original group. See [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md#paired-instruction-variants-added-2026-10-26). No inference or training was run for this update.
+
+The user confirmed on 2026-10-26 that all three instruction candidates, Qwen3-Embedding-0.6B, multilingual E5-large-instruct, and INSTRUCTOR-base, are planned in both instruction modes. This is now also stated in the manuscript methodology. Pilot feasibility remains unverified; it does not make the paired conditions optional without a scope discussion.
