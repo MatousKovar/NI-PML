@@ -76,3 +76,9 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - [ ] Rebudget the sweep for nine input conditions, provisionally 108 main runs at four dimensions and three seeds, plus three native MiniLM runs. Earlier six-condition estimates remain historical.
 
 - [x] 2026-10-26: Add all three instruction candidates with and without task instructions to the LaTeX methodology, including separate CARec training for each input setting. User confirmed this comparison scope. The personal milestone is unchanged.
+
+## Content-only baseline, 2026-10-26
+
+- [x] Add a simple content-only comparison to the LaTeX methodology/evaluation and AI plan, using the same embedding conditions as CARec.
+- [ ] Implement training-history mean profiles and cosine scoring, verify zero/empty profiles and tie handling, then evaluate with exactly the same masks and metrics as CARec.
+- [ ] Report content-only results for each encoder, prompt mode, and dimension. The baseline has no recommender-training seed variation when its input vectors are fixed.

@@ -22,6 +22,7 @@ Confirmed requirements:
 - Use CARec as the starting recommendation method and keep data, text, and evaluation fixed across local comparison conditions.
 - The user's current methodology uses title, brand, and category as item text.
 - Report warm and cold Recall@10 and NDCG@10, plus storage and runtime.
+- Compare CARec with a simple content-only recommender using the same frozen item vectors, split, and candidate items, confirmed 2026-10-26.
 - Work on the user's M4 Pro MacBook with MPS where supported and a verified CPU path where needed.
 - Use Python 3.11, venv, pip, and [requirements.txt](../../requirements.txt). The user requested this simpler setup instead of uv configuration.
 - The personal milestone is the user's writing space; this file holds the detailed AI implementation plan.
@@ -164,13 +165,19 @@ Completion criterion: one tiny end-to-end run has verified phase behavior, check
 
 ### 7. Establish baseline scope and measure one real run
 
+The user confirmed a local content-only baseline on 2026-10-26. For each encoder, instruction mode, and dimension, reuse the exact frozen item vectors supplied to CARec, including the same reduction and normalization. Form a user's profile by averaging vectors of items in their training history and rank candidate items by cosine similarity. Use training history only, never validation/test positives or cold interactions. This uses the user's history for personalization but learns no collaborative user/item parameters, MLP, or graph propagation.
+
+Use the same warm/cold candidate masks, history exclusions, padding policy, eligible users, and metric code as CARec. Specify zero-profile and empty-history handling and deterministic tie-breaking before evaluation. Verify scores and ranking on a hand-checkable example. Evaluate whether CARec adds quality beyond this baseline; do not assume that it will.
+
+The baseline requires no recommender training. With nine input conditions and four dimensions, plan 36 content-only evaluations, plus a native reference if retained. Repeat only when inputs or the protocol change; do not invent across-training-seed variance for identical deterministic baseline scores. Record profile-construction and scoring time separately, and distinguish shared encoder-generation cost from recommender cost.
+
 Respect the user's preference to avoid reproducing every published encoder. Published CARec values can be cited as author-reported references. They are not interchangeable with controlled local baselines when sampling, split, reduction, or implementation differs. Exact agreement is unverified even if the dataset name and seed match.
 
 Recommend one local MiniLM overlap baseline for comparing new encoders at the same dimensions; this is still a recommendation, not a confirmed requirement. An ID-only LightGCN baseline is optional and needs a cold-item policy. If using published references only, frame results as an evaluation of our pipeline with external context rather than isolate encoder improvements over the paper's numbers.
 
 Proposed starting hyperparameters are upstream learning rate 0.001 and batch size 1024, validation NDCG@10 for checkpoint selection, and the audited two-phase structure. Confirm effective epoch limits and regularization/dropout in code; YAML fields do not prove use. If batch size must change, use consistent comparison settings or report the difference.
 
-Completion criterion: a real condition completes with validation-selected checkpoints, saved configuration, resource measurements, and documented baseline interpretation. Use its duration to agree on the sweep budget.
+Completion criterion: a real CARec condition and its matching content-only condition complete on identical evaluation partitions, with verified masks, saved configurations, resource measurements, and validation-selected CARec checkpoints. Use its duration to agree on the sweep budget.
 
 ### 8. Run the experiment matrix
 
