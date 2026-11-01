@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-10-26
+Last updated: 2026-11-01
 
 ## Assignment
 
@@ -40,6 +40,10 @@ CARec's public repository is [`ChenMetanoia/CARec`](https://github.com/ChenMetan
 - Follow [`AGENTS.md`](../../AGENTS.md) and keep confirmed facts separate from proposals and open questions.
 - Do not train an LLM. Cache frozen item embeddings and keep experiments small enough for local MPS testing.
 - Update the relevant `docs/ai/` note after meaningful project decisions or experiments.
+
+## Implementation workflow, 2026-11-01
+
+The user wants to begin experiments through small, reviewable implementation steps. Explain the overall plan, break the next part into smaller steps, and implement only the step the user explicitly requests. After each step, explain the changes and verification, then stop before implementing the next step. The user asks the assistant to write the requested code while retaining visibility into what happens. This workflow does not authorize starting implementation or experiments from a planning request alone.
 
 ## Scope and immediate goal, 2026-10-15
 

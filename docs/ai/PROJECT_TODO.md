@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-10-26
+Last updated: 2026-11-01
 
 ## Confirmed direction
 
@@ -13,6 +13,18 @@ Last updated: 2026-10-26
 ## Open decisions and next steps
 
 For implementation details and completion criteria, read [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md). Keep the user's `third_milestone.md` unchanged unless they request changes to it.
+
+## Incremental experiment start, 2026-11-01
+
+- [x] Record the user's workflow: implement one explicitly requested small step, explain and verify it, then wait for the next instruction. No experiment code was added or run in this planning session.
+- [x] 2026-11-01, step 1.1: add file-path checks, a bounded JSONL preview reader, and separate five-record review/metadata tables to [`src/carec_encoder_comparison.ipynb`](../../src/carec_encoder_comparison.ipynb). The data section runs independently of device/CARec imports; later CARec imports reuse its project root. Verified the four new code cells in IPython with Python 3.11 from both the repository root and `src/`: five dictionaries per file and two table displays. Notebook JSON parses and all code cells compile. Preview outputs remain unsaved; raw files are unchanged. This checks only file beginnings, not full data quality or an evaluation split.
+- [ ] Proposed step 1.2: inspect the bounded sample for interaction IDs, metadata fields, missing values, and malformed records. Label findings as sample-only.
+- [ ] Proposed step 1.3: show item text constructed from title, brand, and category, following the current AI experiment plan. Resolve older conflicting title-only notes before freezing preprocessing.
+- [ ] Proposed next block: agree sampling and exclusion rules, prepare and validate one fixed warm/cold split, then pilot MiniLM and evaluate content-only and CARec on the same inputs. A tiny data preview is not an evaluation split.
+
+The unfinished steps above are proposals awaiting the user's command. Encoder feasibility, reduction protocol, dimension sweep, and total compute remain open as recorded in [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md).
+
+## Earlier open decisions
 
 - [x] 2026-10-15: Prepare a source-backed CARec walkthrough with repository map, training stages, split analysis, and illustrative snippets. See [`CAREC_OVERVIEW_CS.md`](CAREC_OVERVIEW_CS.md).
 - [ ] Choose whether to preserve upstream title + brand + category text or deliberately use titles only. Current title-only milestone wording does not describe upstream preprocessing.
