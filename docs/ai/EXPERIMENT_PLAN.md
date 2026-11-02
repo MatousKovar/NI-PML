@@ -10,7 +10,7 @@ Use [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for stable facts, [PROJECT_TODO.md]
 
 The user wants to implement and understand the project incrementally. Handle environment and repetitive preparation when requested; teach the experimental logic in small steps unless the user asks for direct implementation. This plan documents future work and does not start a full experiment by itself.
 
-Notebook organization, confirmed 2026-11-02: `src/data_exploration.ipynb` contains previews, original CARec text preparation, sampling, splitting, saving, and verification. `src/carec_encoder_comparison.ipynb` loads the saved final artifacts and holds the encoder/recommender experiments. Preparation code stays in the data notebook. This supersedes older references to doing all work in the comparison notebook.
+Notebook organization, confirmed 2026-11-02: `src/data_exploration.ipynb` contains previews, original CARec text preparation, sampling, splitting, and saving. Its current user-edited version ends at saving; the existing manifest records previously completed verification. `src/carec_encoder_comparison.ipynb` currently contains only saved-data loading and concise bullet notes. Add encoder/recommender experiments there in later user-requested steps. Preparation code stays in the data notebook. This supersedes older references to doing all work in the comparison notebook.
 
 ## Objective and confirmed scope
 
@@ -37,7 +37,7 @@ The study compares selected models. Different architectures, pretraining, size, 
 | Area | Recorded evidence | Still unverified |
 | --- | --- | --- |
 | Raw data | `data/Electronics.json` and `data/meta_Electronics.json` exist, totaling 22,504,102,103 bytes. Ten records per file parsed with expected initial fields. | Full parsing, record counts, duplicates, missing fields, ID coverage, and final split. |
-| Prepared sample, 2026-11-02 | Notebook executed the 35%/2023 original CARec preparation and saved a verified 263.7 MB replacement with 81,520 users and 34,220 products. See `DATASET_MANIFEST.json` and latest project context. Raw files remain present. | Resolve repeated pairs across held-out partitions, empty validation histories, missing train-item edges, and the empty upstream text before benchmark claims. |
+| Prepared sample, 2026-11-02 | Notebook executed the 35%/2023 original CARec preparation and saved a verified 263.7 MB replacement with 81,520 users and 34,220 products. See the runtime `data/processed/electronics_carec_035_seed2023/manifest.json` and latest project context. Raw files remain present. | Resolve repeated pairs across held-out partitions, empty validation histories, missing train-item edges, and the empty upstream text before benchmark claims. |
 | Environment | Existing `.venv` passed dependency checks and pip-based setup. | Fresh installation on another machine. |
 | Upstream | Separate ignored checkout at `external/CARec`, pinned to `bbfc7f385e796840f6eb5c967dfc8714284958ce`. Wrapper imports model and helpers. | Full training and evaluator correctness. |
 | Computation | Tiny CARec CPU example passed loss/backward for both phases and scoring. Original graph layer passed CPU/MPS forward/backward. | Complete CARec loss, Trainer, checkpointing, and evaluation on MPS. |
