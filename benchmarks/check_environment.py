@@ -1,6 +1,8 @@
-"""Check dependencies, bounded raw-data reads, and the upstream graph layer."""
+"""Check dependencies, bounded data reads, and the upstream graph layer."""
 
 import argparse
+import csv
+import gzip
 import importlib.metadata
 import itertools
 import json
@@ -15,11 +17,24 @@ def inspect_data(data_dir: Path):
         "Electronics.json": {"reviewerID", "asin", "overall", "unixReviewTime"},
         "meta_Electronics.json": {"asin", "title", "brand", "category"},
     }
+    if not all((data_dir / name).is_file() for name in fields):
+        data_dir = data_dir / "processed/electronics_carec_035_seed2023"
+        manifest = json.loads((data_dir / "manifest.json").read_text())
+        if manifest["status"] != "verified":
+            raise ValueError("Prepared data have not passed verification.")
+        fields = {
+            "sampled_interactions.tsv.gz": {"user_id:token", "item_id:token", "raings:float", "timestamp:float"},
+            "sampled_metadata.jsonl.gz": {"item_id:token", "title", "brand", "category"},
+        }
     result = {}
     for name, required in fields.items():
         path = data_dir / name
-        with path.open(encoding="utf-8") as stream:
-            rows = [json.loads(line) for line in itertools.islice(stream, 10)]
+        opener = gzip.open if path.suffix == ".gz" else open
+        with opener(path, "rt", encoding="utf-8") as stream:
+            if name.endswith(".tsv.gz"):
+                rows = list(itertools.islice(csv.DictReader(stream, delimiter="\t"), 10))
+            else:
+                rows = [json.loads(line) for line in itertools.islice(stream, 10)]
         if not rows:
             raise ValueError(f"Empty data file: {path}")
         missing = required - rows[0].keys()

@@ -1,6 +1,6 @@
 # CARec experiment plan for AI assistance
 
-Updated: 2026-10-26. This is the complete working plan for implementation and experiment handoffs. It records both confirmed requirements and proposals; an open choice is not authorization to silently treat it as a final scientific decision.
+Updated: 2026-11-02. This is the complete working plan for implementation and experiment handoffs. It records both confirmed requirements and proposals; an open choice is not authorization to silently treat it as a final scientific decision.
 
 ## Read and maintain this plan
 
@@ -9,6 +9,8 @@ Read this file before changing preprocessing, encoder selection, embedding reduc
 Use [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for stable facts, [PROJECT_TODO.md](PROJECT_TODO.md) for task status, and [RESEARCH.md](RESEARCH.md) for verified findings and sources. Update only affected documents after meaningful progress. Record completed work with its evidence and date. Resolve conflicting older notes using the latest explicit user decision, and preserve unresolved disagreements as open questions.
 
 The user wants to implement and understand the project incrementally. Handle environment and repetitive preparation when requested; teach the experimental logic in small steps unless the user asks for direct implementation. This plan documents future work and does not start a full experiment by itself.
+
+Notebook organization, confirmed 2026-11-02: `src/data_exploration.ipynb` contains previews, original CARec text preparation, sampling, splitting, saving, and verification. `src/carec_encoder_comparison.ipynb` loads the saved final artifacts and holds the encoder/recommender experiments. Preparation code stays in the data notebook. This supersedes older references to doing all work in the comparison notebook.
 
 ## Objective and confirmed scope
 
@@ -21,6 +23,7 @@ Confirmed requirements:
 - Keep text encoders frozen and cache their vectors. Do not train an LLM.
 - Use CARec as the starting recommendation method and keep data, text, and evaluation fixed across local comparison conditions.
 - The user's current methodology uses title, brand, and category as item text.
+- Since 2026-11-02, the notebook directly uses the pinned `RawDataProcessor._preprocess_text_feature` with Electronics YAML settings. Preserve its returned text and keep encoder-specific formatting separate.
 - Report warm and cold Recall@10 and NDCG@10, plus storage and runtime.
 - Compare CARec with a simple content-only recommender using the same frozen item vectors, split, and candidate items, confirmed 2026-10-26.
 - Work on the user's M4 Pro MacBook with MPS where supported and a verified CPU path where needed.
@@ -34,6 +37,7 @@ The study compares selected models. Different architectures, pretraining, size, 
 | Area | Recorded evidence | Still unverified |
 | --- | --- | --- |
 | Raw data | `data/Electronics.json` and `data/meta_Electronics.json` exist, totaling 22,504,102,103 bytes. Ten records per file parsed with expected initial fields. | Full parsing, record counts, duplicates, missing fields, ID coverage, and final split. |
+| Prepared sample, 2026-11-02 | Notebook executed the 35%/2023 original CARec preparation and saved a verified 263.7 MB replacement with 81,520 users and 34,220 products. See `DATASET_MANIFEST.json` and latest project context. Raw files remain present. | Resolve repeated pairs across held-out partitions, empty validation histories, missing train-item edges, and the empty upstream text before benchmark claims. |
 | Environment | Existing `.venv` passed dependency checks and pip-based setup. | Fresh installation on another machine. |
 | Upstream | Separate ignored checkout at `external/CARec`, pinned to `bbfc7f385e796840f6eb5c967dfc8714284958ce`. Wrapper imports model and helpers. | Full training and evaluator correctness. |
 | Computation | Tiny CARec CPU example passed loss/backward for both phases and scoring. Original graph layer passed CPU/MPS forward/backward. | Complete CARec loss, Trainer, checkpointing, and evaluation on MPS. |
@@ -45,14 +49,14 @@ These are recorded checks from earlier sessions, not checks rerun whenever this 
 
 | Choice | Current proposal or known constraint | Required resolution |
 | --- | --- | --- |
-| Sampling | User wants a smaller sample. Upstream Electronics uses 35%. | Fix the fraction and sampling procedure; record any departure from upstream. |
+| Sampling | User requires a CARec-like procedure. Upstream samples 35% of interaction rows before 5-core; active-user sampling is superseded. | Agree the fraction after structural counts and encoder timing; retain upstream ordering and document differences. |
 | Checkpoints | Six candidates below satisfy the intended 3 + 3 design. | Pilot each; replace failures within their group. |
 | Reduction | Earlier proposal was common PCA. User has also asked about native dimension reduction. | Choose common PCA or explicitly compare encoder-plus-reduction systems. |
 | Dimensions | Earlier shared sweep was 64, 128, 256, 384; 768 was optional. | Confirm the sweep for the chosen reduction protocol and resource budget. |
 | Baselines | User prefers using published CARec results to avoid reproducing existing encoders. A local MiniLM overlap run is recommended, not agreed. | Choose published-reference-only reporting or local controlled comparisons, with corresponding claim limits. |
 | Seeds and tuning | Three seeds and a common validation-based training configuration were proposed. | Measure one run before committing to total compute. |
 | Evaluation | Upstream cold evaluator restricts candidates to cold items. | Audit masks, warm catalogue, histories, users included, and inference before finalizing metrics. |
-| Resources | M4 Pro is known. | Record RAM, usable disk, deadline, and acceptable run duration before a large sweep. |
+| Resources | M4 Pro; 24 GiB RAM and about 117 GiB free disk observed 2026-11-02. User confirmed two hours for the first three-encoder generation, excluding preparation/downloads. | Measure throughput before full generation; agree training/sweep time separately. |
 
 Routine implementation can proceed within confirmed scope. Ask about a scientific choice when the next dependent step needs it; continue independent inspections while awaiting an answer. Do not reinterpret a proposed parameter as a user-confirmed result.
 
@@ -213,4 +217,49 @@ The following are planned outputs, not files already implemented:
 
 Keep large data, caches, downloaded sources, and checkpoints ignored by Git; commit code, small configurations, and manifests without raw records. Reuse terms for redistributing upstream code remain unresolved, while local imports were explicitly requested by the user.
 
-Next implementation action: define bounded JSONL loading and the item/interaction data contract in step 1. Settle sampling before freezing the split, reduction before generating reduced caches, and baseline scope before interpreting quality differences. Confirm remaining resource limits before scheduling long runs.
+Current next action, after the user's command: load the verified catalogue and pilot native MiniLM inference/cache saving. Notebook sampling and a fixed upstream-compatible split are now saved; resolve the observed pair overlap and evaluation edge cases before recommender benchmarking. Settle reduction before generating reduced caches and baseline scope before interpreting quality differences. The two-hour first-generation ceiling remains in force.
+
+## Proposed subset and embedding-cache run, 2026-11-02
+
+Latest execution constraint: the user requires sampling and preparation directly in `src/data_exploration.ipynb`, one reviewable increment at a time. The verified sampling cells and outputs now live there; the comparison notebook only loads final data. The earlier standalone attempt and its incomplete outputs were removed before successful notebook preparation. This section retains historical proposals; use the latest project context and verified manifest for current dataset facts and do not recreate a separate preparation runner.
+
+Status: planning only. The user wants to generate reusable on-disk embeddings soon, starting with the three non-instruction checkpoints. This does not remove the confirmed instruction conditions from the later study. The two-hour generation ceiling is confirmed. Subset size, sampling rules, and inference settings below remain proposals. Implementation still proceeds one user-requested increment at a time.
+
+### Dataset size and selection
+
+The user requested sampling as close to CARec as possible on 2026-11-02. This supersedes the earlier active-user sampling proposal, the ten-product eligibility restriction, and the proposed fixed user count. About 10,000 products is only an optional sizing reference, not a fixed catalogue cap or an agreed target.
+
+Use the pinned upstream order: sample interaction rows uniformly without replacement, seed 2023; apply iterative user/item 5-core; match to deduplicated metadata; designate 5% of available products as cold; remove their interactions from warm data; repeat warm 5-core; retain cold interactions only for users remaining in warm data; restrict the catalogue to retained warm/cold products; randomly split warm histories per user 80/10/10.
+
+CARec's Electronics configuration uses `inter_sample_ratio: 0.35`. This is the reference setting, not a user-confirmed run size. If needed for the two-hour encoder budget, propose changing only that fraction after inspecting retained graph counts and measuring inference throughput. Exact fraction remains open. Do not select active users or impose a later product/edge cap. Different fractions change the retained graph and must be reported as a protocol change; even the same fraction and seed do not establish an identical author split without matching row order and random selection.
+
+Read JSONL in bounded batches and save compact interaction records to disk so preparation does not reload all raw text into memory. For a faithful sample, preserve eligible raw row order and use a defined fixed-size sampling algorithm; a streaming Bernoulli sample is not automatically identical to pandas `sample(frac=..., random_state=...)`. Report implementation differences. Inspect malformed rows, missing metadata, metadata duplicates, interaction duplicates, and exclusion counts before freezing. Upstream removes duplicate metadata IDs but does not deduplicate user/product interactions in its preprocessing; its 5-core counts interaction rows, not distinct neighbors. Do not silently add the previously proposed interaction deduplication. Repeated pairs spanning held-out partitions require an explicit audit and protocol decision.
+
+Record users, products, interaction rows, unique pairs, history distributions, metadata exclusions, actual cold counts, and train/evaluation overlap. If a smaller fraction collapses the 5-core or produces too few cold examples, reconsider the fraction before evaluating scores. Freeze the split and the union product catalogue with ordered IDs, text hashes, counts, and checksums. Raw-file scans and preparation remain outside the confirmed encoder-generation budget.
+
+### First encoder batch and pilot
+
+Start with `sentence-transformers/all-MiniLM-L6-v2`, `sentence-transformers/all-mpnet-base-v2`, and `intfloat/e5-base-v2`. Outputs have 384, 768, and 768 dimensions. E5 retains its `query: ` prefix; none gets a free-form recommendation instruction. All three encode exactly the same frozen catalogue, including cold items. Frozen pretrained encoders may see item metadata; fitted PCA and the recommender later use training information only.
+
+Before bulk generation, use a small smoke batch and then 1,000 catalogue products selected across text lengths. Load one checkpoint at a time, use MPS if verified and otherwise record CPU, and try batch sizes 16 and 32. Propose float32 inference/output and explicit L2-normalized full-dimensional vectors, without quantization, PCA, or arbitrary slicing. Normalization is a proposed cache contract; native dimensions do not imply unnormalized vectors. Retain each checkpoint's documented/configured token limit, record it and truncation frequency, and preserve exact input formatting. Pilot prompt-default suppression, output dimensions, finite/nonzero vectors, ID alignment, and save/reload before freezing inference settings.
+
+Measure model loading separately from steady-state encoding. Synchronize MPS around timings. Estimate the sum of per-model catalogue-size/throughput times, adding 50% headroom and loading costs. The user confirmed a two-hour ceiling for generating all three caches on 2026-11-02, excluding data preparation and model downloads. Include model loading and cache writes in that budget; the pilot estimate must leave room for both. If exceeded, discuss catalogue size or scheduling before a full run. No local throughput has been measured, so a same-day finish is a target, not a promise.
+
+### Cache and recovery
+
+Store the reusable catalogue under `data/processed/<dataset_id>/` and embeddings under `artifacts/embeddings/<catalogue_id>/<checkpoint_revision>/<input_config_id>/`. Both roots are already ignored by Git. Store ordered item IDs, full-dimensional float32 vectors, and a JSON manifest. The manifest includes checkpoint commit, catalogue/text/formatted-input hashes, prompt mode and prefix, pooling, normalization, token limit, precision, backend, batch size, library versions, dimensions, timings, and completion state.
+
+Write chunks of up to 1,000 products as temporary files, validate, then rename them into place. Record completion only after a chunk is durable; resume validated matching chunks and recompute interrupted or mismatched ones. Reject a cache when its identity or row alignment differs. Validate missing/duplicate IDs, catalogue coverage, shapes, finite/nonzero vectors, normalization, checksums, and reload. Save downloaded weights in a separate reusable local model cache. Never commit raw records, weights, or vectors.
+
+At 10,000 products, the three float32 vector matrices total 76.8 MB; at 20,000 they total 153.6 MB, excluding IDs, manifests, weights, staging data, and later reductions. These are calculated sizes, not measured artifacts. Preserve native caches so future dimensions and recommender seeds do not rerun the encoder. Split-only changes need not invalidate independent native vectors when the catalogue, text, and encoder settings are unchanged; training-fitted reductions must be refitted.
+
+### Small implementation increments and completion
+
+1. Record the CARec-compatible sampling configuration and output paths; select the interaction fraction after structural inspection and the timing pilot.
+2. Implement bounded interaction staging and uniform row sampling; audit duplicates and report retained 5-core counts without silently changing upstream handling.
+3. Match metadata, inspect core/cold counts, then freeze one split and text catalogue.
+4. Pilot MiniLM and implement durable chunk saving plus resume/reload on a tiny batch.
+5. Pilot MPNet and E5, measure the total estimate, then generate all three approved caches.
+6. Reload cached vectors without loading encoders; report counts, bytes, timings, and identities in the notebook.
+
+Each increment ends with a visible result and waits for the user's next command. Full CARec training and the dimension/seed sweep remain separate. Pilot one CARec run before committing to the provisional 108-run matrix; embedding throughput does not bound graph training or full-catalogue ranking time.

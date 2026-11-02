@@ -29,5 +29,5 @@ if [[ ! -d external/CARec ]]; then
     git -C external/CARec checkout --detach "$carec_commit"
 fi
 
-.venv/bin/python -m ipykernel install --prefix .venv --name ni-pml --display-name 'NI-PML benchmarks'
+.venv/bin/python -m ipykernel install --user --name ni-pml --display-name 'NI-PML benchmarks'
 .venv/bin/python -m benchmarks.check_environment

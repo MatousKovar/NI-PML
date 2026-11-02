@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-11-01
+Last updated: 2026-11-02
 
 ## Assignment
 
@@ -79,3 +79,51 @@ The user confirmed on 2026-10-26 that all three instruction candidates, Qwen3-Em
 ## Content-only comparison, 2026-10-26
 
 The user confirmed a local content-only baseline using the same embeddings as CARec. The planned simple method averages vectors of items in each user's training history and ranks unseen candidates by cosine similarity. It shares the split, input vectors, and candidate masks with CARec and uses no MLP or graph propagation. The comparison will test whether CARec adds value, without assuming a gain. The manuscript methodology and AI plan now include it; no implementation or experiment has run.
+
+## Product input preparation, 2026-11-01
+
+The user explicitly requested title, brand, and category as encoder input and a brief explanation in the notebook. Its working formatter joins these fields in that order, decodes HTML entities, collapses whitespace, omits empty fields and the exact redundant `Electronics` category, and preserves case and punctuation. Entirely empty texts raise an error. Product IDs remain separate for vector alignment; no user IDs, ratings, or review text enter the encoder. This differs from upstream's exact cleaning and is not a claim of identical preprocessing.
+
+The notebook prepares five preview products for the existing six candidate checkpoints and nine input conditions. The shared instruction, `Represent this product for personalized recommendation.`, is a pilot choice, not a validated prompt. E5-base retains `query: `; Qwen and E5-instruct use their respective instruction wrappers; INSTRUCTOR uses instruction/text pairs. Inference compatibility, automatic prompt defaults, token truncation, and final dataset preparation remain unverified. No models were downloaded or executed.
+
+## Embedding-generation budget, 2026-11-02
+
+The user wants reusable disk caches and to start with the non-instruction encoders. The current plan interprets this first batch as MiniLM, MPNet, and E5-base, retaining E5's required prefix. Later instruction conditions remain in scope. The user confirmed a maximum of two hours for the first complete three-encoder generation, excluding data preparation and model downloads. Model loading and cache writes count toward that budget. Future CARec training and sweep budgets remain open.
+
+Read-only checks reported 24 GiB of physical RAM through `psutil.virtual_memory().total` and about 117 GiB of available disk through `df -h .`. These are observations from this session, not inference benchmarks. Detailed subset, timing-pilot, and resumable-cache proposals are recorded in the notebook and [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md#proposed-subset-and-embedding-cache-run-2026-11-02). Dataset size and sampling remain unconfirmed.
+
+The user subsequently required sampling as close to CARec as possible. Preserve upstream interaction-row sampling and preprocessing order; the active-user sampling proposal is superseded. Upstream's 35% fraction and seed 2023 are reference settings. The local fraction remains open pending retained counts and the two-hour timing estimate; about 10,000 products is not a confirmed target or cap. Upstream 5-core counts interaction records and does not first deduplicate user/product pairs. Audit duplicates and leakage before choosing any deviation. See the updated notebook plan.
+
+## Notebook-only preparation and cleanup, 2026-11-02
+
+The user set today's objective to prepare and save CARec-like sampled data, then remove the original datasets to free disk space. They then interrupted the standalone implementation and required all sampling/preparation to live directly in `src/carec_encoder_comparison.ipynb`. Preserve the existing jointly prepared preview/text/input cells. Do not create a separate sampling module or test suite without a new request. The large future-work plan cell was removed from the notebook at their request; its proposal remains in the AI plan for reference.
+
+The external preparation process was stopped. Its newly added module, tests, bytecode, and two incomplete sample artifacts were removed. No verified dataset was produced and neither original file was deleted. Continue with small notebook cells under the user's direction. The earlier authorization to remove original datasets applies only after saved replacements have been verified.
+
+## Direct upstream product text, 2026-11-02
+
+The user requested direct reuse of CARec's text preparation. The notebook now calls the pinned `RawDataProcessor._preprocess_text_feature` with `data_name` and `text_feature_list` from upstream's Electronics YAML, replacing the custom formatter described above. Its returned text is preserved without additional cleaning; model-specific input wrappers remain separate. The text-only processor bypasses constructor directory creation and does not call `preprocess()`. The current two-product preview passed and its output is saved in the notebook. This establishes the original text-preparation path for valid matching metadata, not equivalence of the full dataset/split or encoder pipelines.
+
+## Notebook kernel correction, 2026-11-02
+
+The user's saved traceback showed `ModuleNotFoundError: No module named 'torch_geometric'` under system Python 3.13. Reproduced that failure with the same interpreter; the existing Python 3.11 `.venv` already contains the dependency and imports pinned CARec successfully. The notebook now declares kernel `ni-pml`, displayed as `NI-PML benchmarks`, and its data-paths cell checks `sys.prefix` before CARec imports. An already open editor session may still require selecting that kernel and restarting. All current notebook code cells executed successfully in `.venv`; no dependency installation or upstream edit was needed.
+
+Folder inspection on 2026-11-02 confirmed that `.venv/bin/python` links to the Python 3.11.17 runtime inside `.python`; `sys.base_prefix` points there. Both directories are required for the current environment. `.tools` is a separate Python 3.13 environment containing only pip and uv from the older setup; current setup code does not reference it. Approximate allocated sizes from `du -sh` were 986 MB for `.venv`, 77 MB for `.python`, and 39 MB for `.tools`. No directories were removed during this inspection.
+
+VS Code log inspection later that day showed its environment locator discovering `.venv`, while its Python extension retained `.tools` and Jupyter launched `/usr/local/bin/python3`. The `ni-pml` kernelspec was visible only from `.venv`; the actual system Python 3.13 could list only `python3`. Registered the existing kernel with `ipykernel install --user`, and changed `scripts/setup.sh` to repeat that registration. System Python now resolves `ni-pml` to this project's `.venv/bin/python`, which successfully imports ipykernel and torch_geometric. No packages were installed. The live VS Code picker could not be inspected through computer use, so refreshing the window and selecting the registered Jupyter kernel remains a UI handoff.
+
+## Verified CARec sample, 2026-11-02
+
+The user resumed notebook-based preparation after resolving the kernel issue. The notebook now implements and has executed the 35% sample, seed 2023, direct upstream `_preprocess_inter_data`, direct upstream per-user splitting, and original product-text preparation. A small adapter supplies the streamed sample in exactly pandas sampling order instead of sampling that subset again. A differential fixture matched the unchanged full-input upstream method, including repeated pairs and absent metadata. This verifies the implementation against the pinned code, not identity with the authors' raw files or published split.
+
+Saved replacement: `data/processed/electronics_carec_035_seed2023/`, 263.7 MB. It retains 7,348,024 sampled review rows with needed fields, metadata for 519,565 sampled products, final train/validation/test/cold partitions, original product metadata and texts, and explicit zero-based ID maps. The final dataset has 81,520 users, 34,220 products, and 623,896 interaction rows. Partition counts are 452,606 train, 14,853 validation, 133,274 test, and 23,163 cold. Cold evaluation data include 18,680 users and 1,797 products.
+
+The manifest is `verified`. File hashes, sample reload, partition and text reconstruction entirely from saved data, row separation, cold separation, catalogue coverage, ID maps, and warm 5-core all passed. A small manifest snapshot is retained in [`DATASET_MANIFEST.json`](DATASET_MANIFEST.json). Notebook previews and the existing environment check also passed with raw files simulated as unavailable. Both originals remain present; the user may now remove them for this fixed-sample workflow. A different selection from the full population requires the original data again; unused raw fields are not retained.
+
+The original protocol has 419 train/validation, 3,844 train/test, and 91 validation/test overlapping user/product pairs despite disjoint source rows. It also leaves 7 warm products without train edges, 69,134 users without validation positives, and one empty upstream item text. These cases were preserved, not silently corrected. Resolve their evaluation treatment before claiming a leakage-free benchmark or tuning against validation. No encoders or recommender training ran.
+
+## Separate preparation and experiment notebooks, 2026-11-02
+
+The user requested two adjacent notebooks. [`src/data_exploration.ipynb`](../../src/data_exploration.ipynb) owns raw/saved-data previews, original CARec product-text preparation, sampling, splitting, saving, and verification. The sampling cells and their completed outputs were moved unchanged. [`src/carec_encoder_comparison.ipynb`](../../src/carec_encoder_comparison.ipynb) now loads only the verified final catalogue, four partitions, and ID maps, checks their hashes, and retains encoder input examples and model imports for later experiments. It has no raw-file loading, sampling, or splitting code. Preparation remains in notebook cells, with no separate preparation module.
+
+Verified all experiment code cells with raw files and staging-sample paths blocked. Loaded 34,220 products and all fixed partitions; data file sizes and modification times stayed unchanged. The preparation notebook's imports, paths, previews, original text method, and cache configuration also run independently. Every cell compiles; sampling and saved datasets were not regenerated during this reorganization. Both notebooks select the existing `ni-pml` kernel. Earlier instructions naming the experiment notebook as the preparation location are superseded by this split.

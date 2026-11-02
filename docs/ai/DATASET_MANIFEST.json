@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "upstream_commit": "bbfc7f385e796840f6eb5c967dfc8714284958ce",
+  "sample_fraction": 0.35,
+  "seed": 2023,
+  "sources": {
+    "reviews": {
+      "file": "Electronics.json",
+      "bytes": 11508470738,
+      "mtime_ns": 1792152664787984565,
+      "rows": 20994353,
+      "sha256": "d8b67a799c281fb4111ba4def1c638f34a7bdb38a60deaaa20056156f09efe3f"
+    },
+    "metadata": {
+      "file": "meta_Electronics.json",
+      "bytes": 10995631365,
+      "mtime_ns": 1792083134296045255,
+      "rows": 786445,
+      "sha256": "909546a68cbf2e9f8e6b29ad541d2972fc66cede7b40fef8a65c30ab88bbc3c7",
+      "duplicate_sampled_ids_skipped": 22258
+    }
+  },
+  "configuration": {
+    "data_source": "amazon",
+    "data_name": "Electronics",
+    "input_data_name_dict": {
+      "inter": "Electronics",
+      "item": "meta_Electronics"
+    },
+    "input_dir_dict": {
+      "inter": "Amazon/Reviews",
+      "item": "Amazon/Metadata"
+    },
+    "input_file_suffix": {
+      "inter": ".json.gz",
+      "item": ".json.gz"
+    },
+    "output_dir": "../dataset",
+    "item_meta_data_col": {
+      "asin": "item_id:token",
+      "title": "title",
+      "brand": "brand",
+      "category": "category"
+    },
+    "inter_data_col": {
+      "reviewerID": "user_id:token",
+      "asin": "item_id:token",
+      "overall": "raings:float",
+      "unixReviewTime": "timestamp:float"
+    },
+    "inter_sample_ratio": 0.35,
+    "seed": 2023,
+    "gpu_id": 3,
+    "task": "general",
+    "plm": "all-MiniLM-L6-v2",
+    "user_k_core_threshold": 5,
+    "item_k_core_threshold": 5,
+    "text_feature_list": [
+      "title",
+      "brand",
+      "category"
+    ],
+    "cold_ratio": 0.05,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "group_by": "user_id:token",
+      "order": "RO"
+    }
+  },
+  "counts": {
+    "train": {
+      "rows": 452606,
+      "users": 81520,
+      "products": 32416
+    },
+    "valid": {
+      "rows": 14853,
+      "users": 12386,
+      "products": 9322
+    },
+    "test": {
+      "rows": 133274,
+      "users": 81520,
+      "products": 28515
+    },
+    "cold": {
+      "rows": 23163,
+      "users": 18680,
+      "products": 1797
+    }
+  },
+  "catalogue_products": 34220,
+  "sampled_review_rows": 7348024,
+  "sampled_metadata_products": 519565,
+  "retained_raw_fields": {
+    "reviews": [
+      "reviewerID",
+      "asin",
+      "overall",
+      "unixReviewTime"
+    ],
+    "metadata": [
+      "asin",
+      "title",
+      "brand",
+      "category"
+    ]
+  },
+  "limitations": [
+    "Only the selected review rows and needed metadata fields are retained.",
+    "The authors' exact raw file identity and published split are not verified.",
+    "Duplicate pairs and upstream split rounding are preserved and audited."
+  ],
+  "preparation_seconds": 117.99,
+  "files": {
+    "cold.tsv.gz": {
+      "bytes": 612954,
+      "sha256": "bdb0e3190fe2fd7fae04bf4dc84daf877747965012f4433d11c9aad97894c302"
+    },
+    "item_ids.tsv.gz": {
+      "bytes": 271529,
+      "sha256": "6418dde41892914b23165f629ec1aee00ef46ab8f6a8d11ea12d191bcb013004"
+    },
+    "items.jsonl.gz": {
+      "bytes": 3537242,
+      "sha256": "2ba209f2f1b85054a7f9350d9e48779643cf873c5848b420b41dff22b71164de"
+    },
+    "sampled_interactions.tsv.gz": {
+      "bytes": 207180645,
+      "sha256": "3272c030c0b68461e777cdae43abf1298bcede52bca254771ab411cca9f0d865"
+    },
+    "sampled_metadata.jsonl.gz": {
+      "bytes": 38480863,
+      "sha256": "dabc813b7578a84cef3cf8984b5b346985b66e9505199af592548870955d881e"
+    },
+    "test.tsv.gz": {
+      "bytes": 3191264,
+      "sha256": "7eb38ac4f5aea8ceb4b4f77d19272b5a7e1506f0f847c35f814c2623706d3ab5"
+    },
+    "train.tsv.gz": {
+      "bytes": 9084791,
+      "sha256": "42f766ce673ebc299cc7aaaced1107764ebcc16a341e08e939479838f5e94ecc"
+    },
+    "user_ids.tsv.gz": {
+      "bytes": 975465,
+      "sha256": "fabffa903ef1c96fb04f0906f94a96697f894b465a5602b5c74e6ef4b7b6c53b"
+    },
+    "valid.tsv.gz": {
+      "bytes": 386045,
+      "sha256": "a1243888f5778db21b2a44c60645e3406dd2d46985611794e1c3c2b952c38e8b"
+    }
+  },
+  "audit": {
+    "train_valid_pair_overlap": 419,
+    "train_test_pair_overlap": 3844,
+    "valid_test_pair_overlap": 91,
+    "warm_items_without_train_edges": 7,
+    "users_without_validation": 69134,
+    "users_without_test": 0
+  },
+  "verified_checks": [
+    "checksums",
+    "sample_reload",
+    "partition_reconstruction",
+    "text_reconstruction",
+    "row_separation",
+    "cold_separation",
+    "catalogue_coverage",
+    "id_maps",
+    "warm_core"
+  ]
+}
