@@ -217,7 +217,7 @@ The following are planned outputs, not files already implemented:
 
 Keep large data, caches, downloaded sources, and checkpoints ignored by Git; commit code, small configurations, and manifests without raw records. Reuse terms for redistributing upstream code remain unresolved, while local imports were explicitly requested by the user.
 
-Current next action, after the user's command: load the verified catalogue and pilot native MiniLM inference/cache saving. Notebook sampling and a fixed upstream-compatible split are now saved; resolve the observed pair overlap and evaluation edge cases before recommender benchmarking. Settle reduction before generating reduced caches and baseline scope before interpreting quality differences. The two-hour first-generation ceiling remains in force.
+Current next action, after the user's command: review the successful six-encoder/four-product smoke pilots, then measure catalogue throughput and implement native embedding cache saving. All nine input conditions passed on MPS on 2026-11-03; Qwen uses eager attention, and INSTRUCTOR uses Sentence Transformers prompt handling. Notebook sampling and a fixed upstream-compatible split are now saved; resolve the observed pair overlap and evaluation edge cases before recommender benchmarking. Settle reduction before generating reduced caches and baseline scope before interpreting quality differences. The two-hour first-generation ceiling remains in force.
 
 ## Proposed subset and embedding-cache run, 2026-11-02
 
