@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-11-02
+Last updated: 2026-11-03
 
 ## Assignment
 
@@ -131,3 +131,9 @@ Verified all experiment code cells with raw files and staging-sample paths block
 In the subsequent cleanup requested on 2026-11-02, reduced the comparison notebook to four cells containing short bullet notes, paths/environment selection, and read-only saved-data loading. Removed device selection, unused NumPy/PyTorch and model imports, encoder descriptions, and input-format examples from this current stage. Encoder coverage and planned ablations remain in the AI plan for later implementation. All remaining cells passed against the saved catalogue and splits with raw/staging paths blocked; preparation and stored datasets were unchanged.
 
 After the user found the loading cell hard to read, split it into five short stages: manifest, file checks, product catalogue/ID maps, interaction partitions, and summary. Use explicit loops, named intermediate values, and direct assignments for train/valid/test/cold. The comparison notebook still only loads saved data. Differential execution confirmed identical DataFrames, dtypes, row order, manifest, and checked-file list; preparation and stored files were unchanged.
+
+## Comparison notebook cleanup, 2026-11-03
+
+At the user's request, reviewed the comparison notebook again and removed repeated SHA-256/size scanning and the empty trailing cell. It now contains four loading stages: manifest, product catalogue/ID maps, interaction partitions, and summary. Preserve the project-environment guard, verified-manifest requirement, string IDs, float precision, and partition row-count checks. This is ordinary loading of previously verified artifacts, not a fresh full integrity verification. All current cells executed successfully and a differential check confirmed identical catalogue, maps, split DataFrames, types, and row order. Preparation code and dataset files were unchanged. The repository was clean and `main` matched its `origin/main` tracking ref at session start; yesterday's work was already committed as `14507f2`.
+
+The user then explicitly requested removing verification entirely because they will keep the dataset fixed. The comparison notebook now only locates the project, loads product records/maps and interaction partitions, and shows counts/previews. It does not read the manifest, check its status, enforce a specific environment, compare checksums/sizes, or assert row counts. Counts come from loaded frames. This supersedes the earlier instruction to retain loading guards. String IDs and float precision remain unchanged; old/new frames matched exactly with manifest access blocked. The dataset manifest stays on disk as preparation metadata and is no longer required by this loader.

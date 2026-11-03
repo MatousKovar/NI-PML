@@ -37,7 +37,7 @@ data/Electronics.json
 data/meta_Electronics.json
 ```
 
-Jsou to JSONL soubory s jedním záznamem na řádek. Mají dohromady přibližně 22,5 GB. Sekce `Prepare and save the CARec sample` v datovém notebooku vybírá původních 35 % interakcí se seedem 2023 a volá původní CARec filtrování a rozdělení. Při opakovaném spuštění načítá uložený vzorek. Experimentální notebook pouze načte hotové výstupy a ověří jejich kontrolní součty.
+Jsou to JSONL soubory s jedním záznamem na řádek. Mají dohromady přibližně 22,5 GB. Sekce `Prepare and save the CARec sample` v datovém notebooku vybírá původních 35 % interakcí se seedem 2023 a volá původní CARec filtrování a rozdělení. Při opakovaném spuštění načítá uložený vzorek. Experimentální notebook pouze načte hotové soubory a zobrazí jejich počty a náhled.
 
 Ověřená data jsou v `data/processed/electronics_carec_035_seed2023/`:
 

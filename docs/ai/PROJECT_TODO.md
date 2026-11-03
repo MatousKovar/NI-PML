@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-11-02
+Last updated: 2026-11-03
 
 ## Confirmed direction
 
@@ -11,6 +11,10 @@ Last updated: 2026-11-02
 - [x] Restore the requested CARec encoder-comparison notebook scaffold at [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb).
 
 ## Open decisions and next steps
+
+- [x] 2026-11-03: add a six-model candidate table and documented input formats to the comparison notebook. Retain paired instruction/no-instruction conditions for Qwen, E5-instruct, and INSTRUCTOR; instruction wording and local pilots remain pending. No inference code or data changed.
+- [x] 2026-11-03: review and trim the comparison notebook to manifest, catalogue/maps, partitions, and summary. Remove repeated checksum scanning and the empty cell; retain verified-status, environment, ID types, float precision, and row-count checks. All cells pass and old/new DataFrames match exactly. No changes to preparation or stored data; no encoder work started.
+- [x] 2026-11-03: remove all comparison-notebook verification at the user's explicit request. Remove manifest reading/status checks, environment enforcement, and row-count assertions; display actual loaded counts. Catalogue, maps, and all four splits match the previous loader exactly; manifest access was blocked during verification. Preparation and data files are unchanged.
 
 For implementation details and completion criteria, read [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md). Keep the user's `third_milestone.md` unchanged unless they request changes to it.
 
