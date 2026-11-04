@@ -263,3 +263,7 @@ At 10,000 products, the three float32 vector matrices total 76.8 MB; at 20,000 t
 6. Reload cached vectors without loading encoders; report counts, bytes, timings, and identities in the notebook.
 
 Each increment ends with a visible result and waits for the user's next command. Full CARec training and the dimension/seed sweep remain separate. Pilot one CARec run before committing to the provisional 108-run matrix; embedding throughput does not bound graph training or full-catalogue ranking time.
+
+## Native cache completion, 2026-11-04
+
+All six encoders and nine input conditions now have verified native caches for the fixed 34,220-product catalogue. MiniLM was reused and eight files were generated on MPS. The notebook loads each existing condition before model construction and generates only missing files. Full rerun verification passed without model loading or file writes. Details and measured times are in the dated context and research entries; the ignored generation report records exact provenance. The earlier sampling and smoke-pilot steps above are historical. Complete-file reuse is implemented; within-condition chunk resume and explicit notebook model cleanup are still deferred. PCA and recommender work remain separate user-requested steps.

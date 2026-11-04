@@ -294,3 +294,18 @@ The installed Sentence Transformers 5.1.2 explicitly recognizes `hkunlp/instruct
 All six checkpoints passed real four-product MPS inference in the comparison notebook: MiniLM 384, MPNet 768, E5-base 768, Qwen 1024, E5-instruct 1024, and INSTRUCTOR-base 768 dimensions. Both instruction modes passed for the last three models, giving nine conditions. Outputs are finite, float32, and L2-normalized; saved notebook outputs show parameters, exact sample inputs, and results. The ignored local report `artifacts/encoder_pilots/pilot_results.json` records checkpoint revisions, attention implementations, token limits, backend, load time, and first-batch time. This is a compatibility smoke check, not a throughput or recommendation benchmark.
 
 Qwen's default SDPA implementation on the installed PyTorch 2.6.0/MPS stack returned non-finite vectors for the four-product batch. A one-product probe also aborted inside MPS grouped-query matmul. Changing only attention to eager produced finite vectors for the original batch; both final Qwen modes passed with eager attention. The notebook makes this setting explicit and does not silently fall back to CPU. These are local observations, not a claim that all Qwen/MPS versions fail. Native embeddings for the full catalogue and reduced caches have not been generated.
+
+## Full-catalogue generation measurements, 2026-11-04
+
+Generated and verified the remaining eight native embedding files for 34,220 Amazon Electronics products on the local M4 Pro/MPS environment. The existing MiniLM file was reused. The nine NPZ files total 1,046,056,215 bytes. All condition matrices are float32 with finite values and unit norms; stored product IDs match the frozen catalogue exactly. Full wall time was 2,553.62 seconds. No recommendation quality has been measured.
+
+| Encoder | Conditions generated | Batch | Load, encoding, and save time, seconds |
+| --- | --- | --- | --- |
+| MiniLM-L6-v2 | 0, existing cache reused | Unknown | Unknown |
+| MPNet-base-v2 | 1 | 32 | 106.98 |
+| E5-base-v2 | 1 | 32 | 102.19 |
+| Qwen3-Embedding-0.6B | 2 | 16 | 1,371.27 |
+| Multilingual-E5-large-instruct | 2 | 32 | 706.26 |
+| INSTRUCTOR-base | 2 | 32 | 241.53 |
+
+Times for instruction models include both modes and are not per-condition measurements. Qwen used eager attention in float32, with left padding; INSTRUCTOR excluded prompt tokens from pooling. The shared instruction is exactly the current notebook value, recorded with its wrappers in each NPZ and the local report. `artifacts/embeddings/electronics_carec_035_seed2023/generation_report.json` records software versions, checkpoint revisions, backend, token limits, catalogue checksum, and every file checksum. The full notebook rerun succeeded with model construction and saving blocked; existing cache hashes and timestamps stayed unchanged. These are one-run local measurements, not cross-hardware benchmarks.
