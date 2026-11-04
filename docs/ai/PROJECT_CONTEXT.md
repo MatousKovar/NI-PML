@@ -37,6 +37,7 @@ CARec's public repository is [`ChenMetanoia/CARec`](https://github.com/ChenMetan
 
 ## Working rules
 
+- As clarified on 2026-11-04, prepare notebook code only. The user runs all cells, computations, and tests themselves. Do not execute them without a new explicit request; earlier generation authorization does not authorize future runs.
 - Follow [`AGENTS.md`](../../AGENTS.md) and keep confirmed facts separate from proposals and open questions.
 - Do not train an LLM. Cache frozen item embeddings and keep experiments small enough for local MPS testing.
 - Update the relevant `docs/ai/` note after meaningful project decisions or experiments.
@@ -169,3 +170,7 @@ At the user's request, every notebook encoder section now checks its expected NP
 Nine NPZ conditions now cover the same 34,220 ordered product IDs: MiniLM at 384 dimensions; MPNet and E5-base at 768; Qwen and E5-instruct at 1024 in each instruction mode; INSTRUCTOR at 768 in each instruction mode. All are float32, finite, and unit-normalized. The files total 1,046,056,215 bytes under `artifacts/embeddings/electronics_carec_035_seed2023/`. The existing MiniLM cache was reused; the other eight files were generated on MPS, one model per process. Qwen used batch 16 and eager float32 attention; other generated models used batch 32. The user's shared instruction was preserved exactly. Total wall time including loading, saving, and verification was 42.56 minutes.
 
 The ignored `generation_report.json` records catalogue/file hashes, exact prompts, model revisions, token limits, dimensions, software versions, device, batch sizes, and per-model total generation times. MiniLM's original generation backend/time remain unknown. Every file passed full ID/order/shape/dtype/finite/norm checks. A real full notebook rerun loaded all nine caches with model construction and saving blocked; timestamps and SHA-256 hashes remained unchanged. Full notebook output now shows cache loading and catalogue shapes. Native generation is complete; PCA and recommender evaluation have not run.
+
+## Recommender notebook scaffold, 2026-11-04
+
+`src/carec_training.ipynb` is the separate notebook for using cached embeddings with CARec. It currently contains architecture notes, configurable selection/loading of one NPZ condition, and saved interaction loading. Its cells have no outputs or execution counts. Subsequent steps will connect RecBole IDs and padding, instantiate the pinned original CARec implementation, inspect the training-only graph, then add the two phases and evaluation. Native MiniLM is the initial input selection; this does not settle the cross-encoder dimension protocol. No code, training, graph construction, or tests were executed when creating this scaffold.
