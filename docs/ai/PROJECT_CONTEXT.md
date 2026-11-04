@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-11-03
+Last updated: 2026-11-04
 
 ## Assignment
 
@@ -149,3 +149,13 @@ MPNet now also has a standalone minimal section matching MiniLM, verified on CPU
 Multilingual E5-large-instruct now also has a direct minimal pilot, with both instruction modes verified on CPU at `(4, 1024)`. It reuses the user's current `PILOT_INSTRUCTION` unchanged. Model memory cleanup was discussed but is explicitly not implemented at the user's request.
 
 All six encoder sections now use direct minimal pilot code without the removed helper. Qwen and INSTRUCTOR run both instruction modes, with explicit eager attention for Qwen and prompt-excluding pooling for INSTRUCTOR. E5-base now includes its required feature prefix and keeps separate variables from MPNet. The final summary reads current embedding shapes instead of the obsolete helper results. Full current notebook execution passed on CPU for all nine conditions, including finite-value and normalization checks. This supersedes the earlier note that remaining sections require the shared helper. Memory cleanup remains unimplemented.
+
+## MiniLM full-catalogue code, 2026-11-04
+
+At the user's request, MiniLM now encodes the entire loaded catalogue at batch size 32, keeping normalized native 384-dimensional vectors. A separate cell saves ordered string product IDs and vectors plus model identity/revision, empty prompt, normalization, and token limit to `artifacts/embeddings/electronics_carec_035_seed2023/all-MiniLM-L6-v2.npz`. A temporary file is renamed after saving, preserving an older complete file if writing fails. The cache uses a dedicated MiniLM model ID so later encoder cells cannot corrupt its metadata. Real CPU inference on 128 products and exact save/reload in a temporary directory passed. No permanent vector file or full-catalogue run was created. Other encoder pilots and the user's shared setup remain unchanged. Resume and memory cleanup are separate future steps.
+
+## MiniLM cache verified, 2026-11-04
+
+A complete `artifacts/embeddings/electronics_carec_035_seed2023/all-MiniLM-L6-v2.npz` already existed when the user requested the full run. Verified all 34,220 IDs against catalogue order and uniqueness, vector shape `(34220, 384)`, float32 dtype, finite values, unit norms, empty prompt, normalization, and 256-token limit. The first four vectors agree with fresh CPU inference at the stored revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` within `2e-4` absolute/relative tolerance. File size: 53,932,811 bytes. SHA-256: `c76a66a2ac31bc0d2512ea3733ff7bbccf727b448348b0bf38372d2806a60933`. The existing cache was reused; full generation was not repeated, so its original runtime/backend were not measured here. Other encoder caches have not been generated in this step.
+
+The save operation is now a reusable notebook-local `save_embeddings` function, called from MiniLM's save cell. It accepts the output path, ordered IDs, vectors, model/model ID, and optional prompt/normalization metadata. It retains the same NPZ fields and temporary-file replacement, and rejects mismatched ID/vector row counts. Round-trip checks used temporary files and preserved the full cache. Other encoders have not been expanded or wired to save in this refactor.

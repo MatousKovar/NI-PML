@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-11-03
+Last updated: 2026-11-04
 
 ## Confirmed direction
 
@@ -12,6 +12,9 @@ Last updated: 2026-11-03
 
 ## Open decisions and next steps
 
+- [x] 2026-11-04: extract MiniLM saving into notebook-local `save_embeddings(path, item_ids, embeddings, model, model_id, prompt="", normalized=True)`. Keep temporary-file replacement and the existing NPZ schema; MiniLM now calls the function. Accept per-condition paths and prompt settings for reuse by other encoders. Validate matching ID/vector row counts before writing. Verified exact round-trip compatibility against the existing cache in a temporary directory, custom metadata, and mismatch rejection; the full cache is unchanged.
+- [x] 2026-11-04: on the user's request to run full MiniLM generation, found its complete cache already on disk and verified it instead of repeating the full encoding. Loaded 34,220 ordered IDs and `(34220, 384)` float32 vectors; all values finite and unit-normalized, IDs match the saved catalogue exactly. The first four vectors match fresh CPU inference using the stored checkpoint revision. File size is 53,932,811 bytes. No other encoder generation ran.
+- [x] 2026-11-04: expand only MiniLM to encode all loaded products with batch size 32, a progress bar, and finite/shape checks. Add a separate atomic `.npz` save cell with ordered product IDs, embeddings, checkpoint revision, prompt, normalization, and token limit. Verified real inference and exact save/reload for 128 products on CPU; full-catalogue generation has not run. Other encoder pilots remain unchanged. This first save step restarts interrupted encoding; resumable chunks and model cleanup remain deferred.
 - [x] 2026-11-03: complete the remaining minimal sections. Qwen and INSTRUCTOR now have fact bullets, exact previews, and direct paired inference without helpers. Qwen explicitly uses eager float32 attention and left padding; INSTRUCTOR excludes prompt tokens from pooling. Fix E5-base's missing `query: ` prefix and separate model/vector names. Replace the obsolete helper-based summary with actual output shapes. The entire current notebook passed offline on CPU, all nine conditions finite and unit-normalized at expected dimensions. Preserve the shared instruction and existing MiniLM, MPNet, and E5-instruct cells. No memory cleanup or bulk generation added.
 - [x] 2026-11-03: simplify only multilingual E5-large-instruct into model-fact bullets, exact input previews, and a direct pilot using the user's existing shared instruction. Both modes passed offline on CPU with finite normalized `(4, 1024)` vectors. Preserve all other cells and the user's instruction wording. The user asked about releasing models after pilots but explicitly deferred implementing memory cleanup.
 - [x] 2026-11-03: add only E5-base Markdown bullets covering approximate parameter count, layers, output dimension, required feature prefix, language, and token limit, with its official model card. All code cells, outputs, and other notebook cells remain unchanged.
