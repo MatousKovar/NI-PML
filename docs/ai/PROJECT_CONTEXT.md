@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-11-04
+Last updated: 2026-11-05
 
 ## Assignment
 
@@ -184,3 +184,7 @@ At the user's request, added only the item-vector attachment step after the alig
 Step 9 now calls `recbole_dataset.build()` and names its four outputs `train_dataset`, `valid_dataset`, `test_dataset`, and `cold_dataset`, matching the configured benchmark file order. The notebook explains conversion to tensor-backed `Interaction` objects, shared feature/ID mappings, and the need to recreate the original dataset before repeating this in-place conversion. It displays split counts and the training dataset's item-vector shape. The code was not executed; original model construction remains the next step, using `train_dataset` only.
 
 The user ran step 9 and saved the expected partition counts and item tensor shape `(34221, 384)`. The notebook now contains unexecuted configuration, construction, and graph-summary cells for `carec.CollabContex(config, train_dataset)`. MLP widths follow the selected embedding dimension; graph depth 2, MLP settings, and dropout 0.2 follow the original runner. Initialization seed is 2023. The current configuration remains on CPU for inspection. No held-out dataset is passed to the model; no training or propagation code is added in this step, and the agent did not execute the new cells.
+
+On 2026-11-05, the saved notebook graph summary shows the user's successful CPU construction: 81,520 real users, 34,220 real products, 452,606 training interactions, and 905,212 directed entries. Added unexecuted code for one phase-one forward preview over four requested training pairs. The original LightGCN still propagates across the full training graph before selecting those outputs; the model forward normalizes the returned vectors. Eval/no-grad mode and the absence of an optimizer preserve parameter values. The preview shows shapes, finiteness checks, and norms. No agent-run computations or tests occurred; training is still not implemented.
+
+On 2026-11-05, the user requested moving directly into training. Step 15 now prepares one full phase-one epoch with shuffled training rows, Adam at 0.001, batch size 1024, original CARec loss, and only the user embedding table trainable. It prints batch progress and an interaction-weighted mean of batch losses. The model remains on CPU. Rerunning continues current parameters with a fresh optimizer; reconstruct the model for a fresh start. Phase two, validation, early stopping, and checkpoint saving are not yet implemented. All new code remains unexecuted by the agent.

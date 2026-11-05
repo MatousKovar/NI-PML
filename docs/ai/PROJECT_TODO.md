@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-11-04
+Last updated: 2026-11-05
 
 ## Confirmed direction
 
@@ -12,6 +12,10 @@ Last updated: 2026-11-04
 
 ## Open decisions and next steps
 
+- [x] 2026-11-05: add a readable phase-one training loop at the user's request. Default to one full shuffled epoch, Adam at 0.001, and batches of 1024 using original CARec loss and user-table-only updates. Display progress and weighted average batch loss. Preserve CPU configuration and existing outputs. Reruns continue current weights with a fresh optimizer. Phase two, validation, early stopping, and checkpoints remain separate. No cells, training, or tests were run by the agent.
+
+- [x] 2026-11-05: add step 14 to the training notebook, a fixed-seed 64-interaction phase-one loss preview using upstream `calculate_loss` in eval/no-grad mode. Require at least two distinct users for uniformity and explain alignment, uniformity, and possible negative loss. No optimizer or weight updates added. The agent did not run notebook cells or tests.
+- [x] 2026-11-05: add only a phase-one forward preview after the user-run graph/model summary. Select four training pairs, bypass MLP, use eval/no-grad mode, and show output shapes, finiteness checks, and normalized vector norms. Explain that upstream propagation still covers the full training graph and that weights are not trained. No new cells, propagation, or tests were run by the agent.
 - [x] 2026-11-04: add original CARec model construction and graph inspection code after the user-run split step. Use the selected embedding dimension, original two-layer graph/MLP runner settings, initialization seed 2023, and only `train_dataset`. Display real user/item counts, training interactions, directed graph entries, vector shapes, and device. Keep the current CPU inspection configuration. No model construction, propagation, training, or tests were executed by the agent.
 - [x] 2026-11-04: implement only saved-split construction as step 9 in the training notebook. `recbole_dataset.build()` returns train/valid/test/cold datasets and converts registered features to tensors. Add interaction counts and an item-vector tensor shape display, plus an explanation of the in-place format change. No graph, model, training, notebook cells, or tests were run.
 - [x] 2026-11-04: implement only item-feature attachment in `carec_training.ipynb`. Register `item_emb` as an item-source FLOAT_SEQ field with the cached dimension, then attach the aligned rows to the current pandas `item_feat` table. Add a three-row preview. RecBole's later build step will convert vectors to tensors. No splitting, model construction, graph construction, code execution, or tests ran.
