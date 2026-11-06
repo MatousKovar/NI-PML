@@ -323,3 +323,18 @@ The same upstream YAML enables repeatable sampling. Installed RecBole 1.1.1 [Rep
 ## MPS uniformity adapter, 2026-11-05
 
 PyTorch's [native distance implementation](https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/Distance.cpp) excludes MPS from pdist forward/backward supported-device checks. The pinned CARec uniformity loss uses torch.pdist. The notebook therefore delegates this original loss computation to CPU for MPS model instances, with differentiable tensor transfers, while retaining graph propagation on MPS. This source-based compatibility adaptation has not been executed or timed in the notebook.
+
+## External GPU options, 2026-11-05
+
+The user asked about moving long CARec training off their Mac. No provider or spend is authorized yet. Options verified against official sources:
+
+- [ClusterFIT](https://help.fit.cvut.cz/%40master/cs/cluster-fit/index.html) provides FIT compute including GPU nodes; individual access and allocation are unconfirmed. [HelpFIT GPU guidance](https://help.fit.cvut.cz/%40master/en/cloud-fit/processes/gpu.html) directs GPU use to ClusterFIT.
+- [MetaCentrum terms](https://docs.metacentrum.cz/en/docs/access/terms) provide free academic/noncommercial compute for Czech institutions. Its [GPU inventory](https://docs.metacentrum.cz/en/docs/computing/gpu-comput/clusters) includes A40, A100, and L40S nodes. Registration, scheduling, and available allocation need checking; do not assume immediate access or DGX grant eligibility.
+- [Runpod pricing](https://www.runpod.io/pricing), marked updated 2026-11-04, lists Pods with A40 48GB at USD0.59/hour, RTX A6000 48GB at USD0.59/hour, and RTX4090 24GB at USD0.89/hour. These are displayed rates, not a reserved quote or available-instance guarantee; storage and other charges are additional. A proposed one-hour A40/A6000 trial can measure runtime and peak memory before budgeting nine conditions. No CUDA speedup or fit has been measured.
+- [Colab FAQ](https://research.google.com/colaboratory/intl/en-GB/faq.html) confirms varying GPU availability and session/resource limits, including paid plans. It is a candidate for a short pilot; uninterrupted long runs are not guaranteed.
+
+Migration would reuse processed splits and existing embedding caches rather than regenerate encoders or transfer raw datasets. The current training notebook is not yet CUDA-ready end to end: it needs explicit CUDA device selection, a compatible Linux/CUDA environment, and a user-run integration check. The MPS-only CPU uniformity adapter should not be applied on CUDA. No uploads, provisioning, dependency installation, or computations were performed.
+
+## Local graph performance diagnosis, 2026-11-06
+
+Explicitly authorized benchmarks on the real 905,212-directed-edge MiniLM graph reproduce the saved user-run MPS throughput. The pinned [LightGCNConv source](https://github.com/ChenMetanoia/CARec/blob/bbfc7f385e796840f6eb5c967dfc8714284958ce/recbole_gnn/model/layers.py) materializes gathered/weighted edge vectors. With 384 float32 dimensions a single edge-feature tensor is approximately 1.30 GiB. A cached CPU CSR adjacency with torch.sparse.mm preserves normalized propagation, including duplicate-edge contribution, and reduced measured batch time from roughly 1.34 to 0.45 seconds in phase one and 1.32 to 0.51 seconds in phase two. Loss/gradient checks passed in both phases and a complete isolated phase-one epoch took approximately 98 seconds. The [local performance report](CAREC_PERFORMANCE.md) records methods, timings, source-independent correctness checks, limitations, and reproduction commands. These are local throughput findings; no notebook implementation or trained result was replaced and no larger-dimension speedup is claimed.

@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 ## Confirmed direction
 
@@ -11,6 +11,15 @@ Last updated: 2026-11-05
 - [x] Restore the requested CARec encoder-comparison notebook scaffold at [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb).
 
 ## Open decisions and next steps
+
+- [x] 2026-11-06: switch the notebook to the user-requested hybrid adapter: model/MLP on MPS, normalized CSR propagation on CPU with differentiable transfers, and original uniformity on CPU. Record hybrid backend and component devices, preserve current user settings 200/200 epochs, patience 100, batch 2048, and leave actual CPU-thread selection unchanged. No cells or tests were executed; larger-dimension verification remains pending.
+
+- [x] 2026-11-06: at explicit user authorization, benchmark real MiniLM batches on CPU/MPS, both phases, original and sparse propagation, eight versus one CPU thread, and a diagnostic without graph layers. Confirm upstream graph propagation as the main bottleneck. Verify sparse loss and gradient agreement, then time one complete isolated CPU sparse phase-one epoch. Preserve notebook, checkpoints, splits, and embedding caches. See CAREC_PERFORMANCE.md for timings and commands.
+- [x] 2026-11-06: integrate the user-selected sparse CPU propagation in the notebook, set eight CPU threads, remove the MPS uniformity adapter, and record backend/thread count. Preserve original normalization, repeated-edge weights, batch size, epoch limits, and training/evaluation protocol. No integration cells or tests were executed. Full larger-dimension and recommendation-quality verification remains pending.
+
+- [x] 2026-11-05: revert Gram-matrix MPS uniformity at the user's request after they reported no speed improvement. Restore the original CPU pdist adapter and remove its experimental implementation metadata. Keep the short attachment cell so existing model weights need not be reset. Preserve all other current user edits and settings. No cells or tests were run.
+
+- [x] 2026-11-05: replace only the MPS CPU-uniformity adapter with a notebook-local Gram-matrix implementation of squared Euclidean pair distances. Use the strict upper triangle to match original pdist pairs and clamp negative roundoff distances to zero; keep exp/mean/log and gradients on the input device. Attach it in a separate cell so the user can update an existing model without resetting weights. Keep CPU behavior, user-selected batch size, phases, and evaluation unchanged. Record uniformity implementation in new run settings. No computations or tests ran; numerical/gradient agreement and throughput remain user-run checks.
 
 - [x] 2026-11-05: implement both CARec training phases in one notebook-local train_phase function. Validate each epoch on NDCG@10, reset Adam and patience per phase, atomically save each phase's best weights/optimizer, and reload best phase-one weights before phase two. Default to 200 epochs per phase and patience 30, with both limits configurable to 1 for a user-run check. Move evaluation definitions before training; remove the obsolete phase-one-only loop/pilot call. Save per-run settings, ID maps, per-phase histories, training summaries, and final warm/cold metrics under ignored artifacts/carec. Use restricted tensor/plain-data checkpoint loading. Existing history-mask corrections remain; no new protocol decision or nine-condition loop. No cells, training, evaluation, or tests were run by the agent.
 - [ ] User-run end-to-end MPS check with one epoch per phase: verify best-checkpoint reload, phase-two learning, final warm/cold evaluation, and saved artifacts before launching full training or all nine conditions.
@@ -148,3 +157,9 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - [x] Add a simple content-only comparison to the LaTeX methodology/evaluation and AI plan, using the same embedding conditions as CARec.
 - [ ] Implement training-history mean profiles and cosine scoring, verify zero/empty profiles and tie handling, then evaluate with exactly the same masks and metrics as CARec.
 - [ ] Report content-only results for each encoder, prompt mode, and dimension. The baseline has no recommender-training seed variation when its input vectors are fixed.
+
+## MiniLM result review, 2026-11-05
+
+- [x] Inspect the user's saved completed two-phase MiniLM MPS run without executing cells. Record metrics, actual settings, early stopping, artifacts, and approximately 4h15m recorded training/validation time in project context.
+- [ ] Before comparing nine conditions, choose a common training budget using validation: phase one was still improving at the 30-epoch cap. Phase two adds only 0.0004 validation NDCG@10 while other validation metrics decline. Compare against the agreed content-only baseline before claiming recommendation quality gains; preserve test isolation and resolve overlap protocol for benchmark conclusions.
+- [ ] Prioritize graph/training performance over less-frequent validation: observed validation takes around 1.5-1.7 seconds against approximately 283 seconds of training per epoch, so reducing validation frequency offers little benefit for this run.
