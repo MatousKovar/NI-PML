@@ -12,6 +12,9 @@ Last updated: 2026-11-06
 
 ## Open decisions and next steps
 
+- [x] 2026-11-06: refactor the training notebook into shared data/functions and nine independently runnable model/instruction sections as requested. Add prepare_model and run_experiment; pass run config/directory into training/evaluation, keep hybrid graph propagation, and isolate item features for each dimension. Reuse exactly matching completed results, preserve failed/interrupted run artifacts, and add a disk-only summary table. Preserve current hyperparameters and archive prior notebook outputs without touching trained artifacts. No cells or tests were run.
+- [ ] User-run check of one independent model cell, checkpoint/result reuse, and a different embedding dimension before a long nine-condition comparison. Models are launched individually, not through a shared sweep loop.
+
 - [x] 2026-11-06: switch the notebook to the user-requested hybrid adapter: model/MLP on MPS, normalized CSR propagation on CPU with differentiable transfers, and original uniformity on CPU. Record hybrid backend and component devices, preserve current user settings 200/200 epochs, patience 100, batch 2048, and leave actual CPU-thread selection unchanged. No cells or tests were executed; larger-dimension verification remains pending.
 
 - [x] 2026-11-06: at explicit user authorization, benchmark real MiniLM batches on CPU/MPS, both phases, original and sparse propagation, eight versus one CPU thread, and a diagnostic without graph layers. Confirm upstream graph propagation as the main bottleneck. Verify sparse loss and gradient agreement, then time one complete isolated CPU sparse phase-one epoch. Preserve notebook, checkpoints, splits, and embedding caches. See CAREC_PERFORMANCE.md for timings and commands.
