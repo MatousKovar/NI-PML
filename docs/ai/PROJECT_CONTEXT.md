@@ -1,6 +1,6 @@
 # NI-PML project context
 
-Last updated: 2026-11-06
+Last updated: 2026-11-11
 
 ## Assignment
 
@@ -246,3 +246,15 @@ User questioned low-looking NDCG after approximately 38 epochs. Saved artifacts 
 The user explicitly prefers one heading per model/instruction condition with a short independently runnable cell, rather than a single loop launching all variants. The training notebook now has shared imports/settings, one-time saved-split/ID loading and evaluation loaders, prepare_model, evaluate_carec, train_phase, and run_experiment helpers, followed by nine separate run cells. Each call aligns that cache, makes a fresh config/model and independent item features, retains the benchmarked hybrid propagation, trains both phases, and saves in its own variant/run directory. Shared interactions and ID maps are not mutated by item attachment. Preserve the user's current 200/200 epoch limits, patience 100, batch 2048, and MPS device.
 
 Completed results with exactly matching saved settings are reusable, with reuse_completed=False to force a new run. Interrupted/failed runs retain checkpoints and a status file; no automatic resume. The return contains results/path only, so run variables do not retain all trained models. A final read-only table loads completed historical and new runs from disk. Previous notebook cells/outputs were preserved in an ignored snapshot under artifacts/notebook_snapshots before restructuring; existing results and checkpoints remain unchanged. No notebook cells, tests, inference, evaluation, or training were executed in this refactor. Runtime verification of the new wrapper and larger dimensions remains pending.
+
+## One current run per embedding variant, 2026-11-11
+
+The user explicitly requests a single readable output folder per embedding variant, overwritten on rerun. run_experiment now saves directly under artifacts/carec/<dataset>/<embedding-file-stem>/, with fixed phase1-best.pt and phase2-best.pt plus existing config/history/status/results files. Remove timestamp/random run IDs and automatic completed-result reuse. At the start of an explicitly launched rerun, remove only known previous phase checkpoints, histories, training/results/status files and their temporary versions, so an interrupted rerun cannot expose old completed metrics. Config and ID maps are rewritten. The summary table reads one-level variant results only. Historical timestamp directories remain untouched; no existing artifacts were moved or deleted while editing. Hyperparameters and per-model run cells are unchanged. No cells, training, or tests were executed.
+
+## Weights-only persistence, 2026-11-11
+
+The user explicitly requested saving only models, with no configuration or other sidecar files. The notebook now writes only phase1-best.pt and phase2-best.pt in each fixed embedding-variant folder. Each checkpoint is a CPU state_dict, without optimizer state, settings, metrics, or ID maps. Best epoch/validation metrics remain in memory for reporting. Original cached item vectors and fixed dataset mapping are still required for reconstruction. Final metrics are printed/returned and the summary reads session memory rather than disk. Restarting the kernel loses session metrics. Starting a rerun removes known prior checkpoint/sidecar outputs for that fixed variant folder; no historical artifacts were deleted during this edit. Existing epoch limits 90/90, patience 50, batch 2048, and hybrid backend were preserved. No cells, training, or tests were executed.
+
+## Previous runs removed, 2026-11-11
+
+At the user's explicit request to delete all previous CARec runs and retrain, removed artifacts/carec in full: 23 files totaling approximately 1,249.53 MiB. No separate carec_archive directory existed. Prepared data and all nine embedding NPZ caches remain intact. Historical run paths and metrics in earlier notes describe deleted artifacts. New model-only checkpoints will be created by the user's next notebook runs. No training or notebook cells were executed.

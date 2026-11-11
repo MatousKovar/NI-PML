@@ -1,6 +1,6 @@
 # Project TODO
 
-Last updated: 2026-11-06
+Last updated: 2026-11-11
 
 ## Confirmed direction
 
@@ -11,6 +11,13 @@ Last updated: 2026-11-06
 - [x] Restore the requested CARec encoder-comparison notebook scaffold at [`carec_encoder_comparison.ipynb`](carec_encoder_comparison.ipynb).
 
 ## Open decisions and next steps
+
+- [x] 2026-11-11: delete all previous saved CARec runs/checkpoints at the user's explicit request, preserving prepared data and all nine embedding caches. Removed 23 files, approximately 1,249.53 MiB. No training was started.
+- [ ] User will retrain the selected embedding variants using the fixed-folder, model-weights-only saving workflow.
+
+- [x] 2026-11-11: at the user's explicit request, save only model state_dict checkpoints per phase/variant. Remove optimizer/settings from checkpoint payloads and all config, history, status, ID-map, and results writes. Display and return metrics in memory; the summary now uses session results. A rerun clears known old sidecars for that variant. No existing artifacts were changed during editing, and no cells or tests were run.
+
+- [x] 2026-11-11: simplify output paths at the user's request to one fixed folder per embedding variant. Remove timestamp/random directories and completed-run reuse; rerunning overwrites that variant. Clear known stale checkpoint/history/result/status outputs when the user starts a new run; retain atomic checkpoint/JSON writes. Update the summary to read fixed variant folders. Existing historical directories and artifacts remain untouched. No cells or tests were run.
 
 - [x] 2026-11-06: refactor the training notebook into shared data/functions and nine independently runnable model/instruction sections as requested. Add prepare_model and run_experiment; pass run config/directory into training/evaluation, keep hybrid graph propagation, and isolate item features for each dimension. Reuse exactly matching completed results, preserve failed/interrupted run artifacts, and add a disk-only summary table. Preserve current hyperparameters and archive prior notebook outputs without touching trained artifacts. No cells or tests were run.
 - [ ] User-run check of one independent model cell, checkpoint/result reuse, and a different embedding dimension before a long nine-condition comparison. Models are launched individually, not through a shared sweep loop.
