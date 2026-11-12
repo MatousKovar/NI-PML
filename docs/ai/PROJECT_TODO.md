@@ -173,3 +173,12 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - [x] Inspect the user's saved completed two-phase MiniLM MPS run without executing cells. Record metrics, actual settings, early stopping, artifacts, and approximately 4h15m recorded training/validation time in project context.
 - [ ] Before comparing nine conditions, choose a common training budget using validation: phase one was still improving at the 30-epoch cap. Phase two adds only 0.0004 validation NDCG@10 while other validation metrics decline. Compare against the agreed content-only baseline before claiming recommendation quality gains; preserve test isolation and resolve overlap protocol for benchmark conclusions.
 - [ ] Prioritize graph/training performance over less-frequent validation: observed validation takes around 1.5-1.7 seconds against approximately 283 seconds of training per epoch, so reducing validation frequency offers little benefit for this run.
+
+## Proposed training-budget reduction, 2026-11-12
+
+- Prefer 90 phase-one epochs, 30 phase-two epochs, patience 15 as an initial conservative budget. Replaying the recorded stale counters would keep MiniLM's selected phase-one/phase-two checkpoints and MPNet's selected phase-one checkpoint. MPNet phase two is incomplete, so its eventual best is unknown. This is evidence from two conditions, not a guarantee for all encoders.
+- An aggressive alternative is 60/30 with patience 15. MiniLM phase-one best through epoch 60 was 0.0445 versus 0.0449 over 90, a relative validation reduction of about 0.9%; MPNet was 0.0463 versus 0.0464. Final test effects and phase-two behavior after a shortened first phase remain unmeasured.
+- Keep batch size, learning rate, data, and graph unchanged for this budget decision. Shorter validation intervals offer little saving because validation takes about 1-2 seconds versus 108-182 seconds of training per epoch.
+- No notebook settings were edited, running process interrupted, or checkpoints changed. Do not rerun a model launch cell to change limits mid-run: it deletes that variant's saved checkpoints and starts fresh. Epoch ranges are fixed when each train_phase call starts; patience is read inside the loop.
+
+- [x] 2026-11-12: add a shared checkpoint-existence guard for all nine model launch cells. Any regular *.pt checkpoint in that variant folder skips the full run before model construction or cleanup, including after kernel restart. Existing checkpoints and notebook outputs were preserved. No notebook cells or tests were run.

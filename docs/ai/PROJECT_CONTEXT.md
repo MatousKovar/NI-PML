@@ -258,3 +258,13 @@ The user explicitly requested saving only models, with no configuration or other
 ## Previous runs removed, 2026-11-11
 
 At the user's explicit request to delete all previous CARec runs and retrain, removed artifacts/carec in full: 23 files totaling approximately 1,249.53 MiB. No separate carec_archive directory existed. Prepared data and all nine embedding NPZ caches remain intact. Historical run paths and metrics in earlier notes describe deleted artifacts. New model-only checkpoints will be created by the user's next notebook runs. No training or notebook cells were executed.
+
+## Overnight training review, 2026-11-12
+
+Read-only analysis of saved outputs in `src/carec_training.ipynb`, without running notebook cells, training, or evaluation. Current settings are 90/90 epochs, patience 50, batch 2048. MiniLM completed 90 phase-one and 70 phase-two epochs. Best validation NDCG@10 was 0.0449 at phase-one epoch 85 and 0.0453 at phase-two epoch 20. Training progress durations sum to 4h46m45s, excluding validation, saving, preparation, and final evaluation. Its final warm Recall/NDCG@10 were 0.0714/0.0619; cold 0.0532/0.0304. Fifty phase-two epochs after the selected checkpoint consumed about 90 minutes without changing the selected result.
+
+The saved MPNet output contains 90 phase-one epochs and 27 completed phase-two epochs, with epoch 28 in progress. Best validation scores were 0.0464 at phase-one epoch 68 and 0.0468 at phase-two epoch 25. Median training durations were 171/182 seconds per epoch, versus MiniLM's 108/108 seconds. Completed MPNet training durations sum to about 5h39m, excluding other work. These are saved-output observations, not live kernel inspection.
+
+## Skip existing model checkpoints, 2026-11-12
+
+At the user's request, run_experiment now checks the variant folder for any regular *.pt file before preparing a model or changing files. If one exists, skip the entire run, including both training phases and evaluation. A phase-one checkpoint alone is sufficient, so interrupted variants also stay untouched after kernel restart. Return an existing session result when available, otherwise None. Temporary *.pt.tmp files alone do not trigger skipping. No notebook cells, training, or tests were run.
