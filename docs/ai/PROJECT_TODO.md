@@ -182,3 +182,16 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - No notebook settings were edited, running process interrupted, or checkpoints changed. Do not rerun a model launch cell to change limits mid-run: it deletes that variant's saved checkpoints and starts fresh. Epoch ranges are fixed when each train_phase call starts; patience is read inside the loop.
 
 - [x] 2026-11-12: add a shared checkpoint-existence guard for all nine model launch cells. Any regular *.pt checkpoint in that variant folder skips the full run before model construction or cleanup, including after kernel restart. Existing checkpoints and notebook outputs were preserved. No notebook cells or tests were run.
+
+- [x] 2026-11-12: extend checkpoint skipping to evaluation-only reuse. Prefer phase two, fall back to phase one with correct MLP bypass; display and retain warm/cold metrics in session memory. Preserve checkpoint files. Runtime verification remains user-run; no cells or tests executed.
+
+- [x] 2026-11-13: prepare Qwen without-instruction cell to launch phase two only from phase1-best.pt, preserving phase one and using evaluation-only reuse once phase2-best.pt exists. User must rerun the run_experiment definition and Qwen cell. No notebook execution or tests performed.
+
+## Colab preparation, 2026-11-14
+
+- [x] Prepare `src/carec_training_colab.ipynb` with E5-large without instruction phase two, E5-large with instruction, and both INSTRUCTOR conditions, selected by local checkpoint presence. Include transfer instructions, pinned upstream checkout, proposed CUDA dependencies, CUDA sparse propagation and Drive weights-only saving. Preserve current user edits and local artifacts. No cells or tests were run.
+- [ ] User: create and upload the documented input archive to Drive, connect a GPU runtime, install packages and restart the kernel.
+- [ ] User: use a separate output group and short epoch limits to verify CUDA environment, memory, both phases and evaluation before full runs. CUDA numerical agreement with the Mac remains unverified.
+- [ ] User: run the four remaining conditions individually, save notebook metric outputs, and copy selected weights back when complete.
+
+- [x] 2026-11-14: use the user-confirmed root Drive folder `PML` for Colab inputs and outputs; update notebook paths and transfer instructions. Archive creation and upload remain user steps. No cells or tests were run.

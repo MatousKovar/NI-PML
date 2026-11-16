@@ -268,3 +268,21 @@ The saved MPNet output contains 90 phase-one epochs and 27 completed phase-two e
 ## Skip existing model checkpoints, 2026-11-12
 
 At the user's request, run_experiment now checks the variant folder for any regular *.pt file before preparing a model or changing files. If one exists, skip the entire run, including both training phases and evaluation. A phase-one checkpoint alone is sufficient, so interrupted variants also stay untouched after kernel restart. Return an existing session result when available, otherwise None. Temporary *.pt.tmp files alone do not trigger skipping. No notebook cells, training, or tests were run.
+
+## Checkpoint evaluation after restart, 2026-11-12
+
+The user clarified that checkpoint reuse should display warm/cold Recall and NDCG. The existing-checkpoint branch now prepares the model, loads phase2-best.pt preferentially or phase1-best.pt otherwise, explicitly restores the matching MLP phase, and runs only final warm/cold evaluation. It does not train or write checkpoints. Unknown *.pt names block training with a clear error. Results populate the session summary, with unknown best epochs represented by None because weights-only files contain no training history. Phase-one-only results bypass the untrained MLP and are not completed two-phase results. No notebook cells or tests were run.
+
+## Qwen phase-two-only launch, 2026-11-13
+
+At the user's request, added phase2_only to run_experiment and enabled it for Qwen3-Embedding-0.6B without instruction. Disk inspection found phase1-best.pt but no phase2-best.pt for this variant; its saved cell output ends with KeyboardInterrupt. The option requires phase-one weights, loads them, and trains only phase two with a fresh optimizer and the current phase-two budget. Phase-one weights are preserved. If phase-two weights already exist, retain evaluation-only behavior. Weights-only persistence cannot resume an interrupted optimizer/epoch position. No cells, training, evaluation, or tests were run.
+
+## Colab notebook preparation, 2026-11-14
+
+At the user's request, prepared `src/carec_training_colab.ipynb` for the conditions without local phase-two checkpoints. Read-only file inspection found both phase weights for MiniLM, MPNet, E5-base and both Qwen conditions; E5-large without instruction has only phase-one weights. The Colab notebook includes that condition's phase two, E5-large with instruction, and both INSTRUCTOR conditions. Presence of checkpoint files was used for selection; their training quality was not independently audited.
+
+The standalone notebook includes a user-run archive command for fixed splits, item catalogue, four embedding caches and the existing E5 phase-one weights. It stages inputs from Drive, clones unchanged pinned CARec, installs a proposed Python 3.11/3.12 CUDA environment, and uses sparse CSR graph propagation plus original uniformity on CUDA. It preserves current local budgets of 90/30 epochs, patience 15, batch 2048 and the existing evaluation protocol. NumPy 1.26.4 is proposed for Python 3.12 compatibility, differing from the Mac's 1.23.5. Best weights alone go into a separate Drive `artifacts/carec-colab` tree. Existing phase two triggers evaluation; phase one starts phase two with a fresh optimizer. No exact optimizer/epoch resume is implemented. All cells remain unexecuted; dependencies, CUDA correctness, memory and speed need user-run verification. The local notebook and trained artifacts were preserved.
+
+## Confirmed Drive folder, 2026-11-14
+
+The user has a PML folder at the root of My Drive. Updated the Colab notebook to use `/content/drive/MyDrive/PML`, with the input archive directly in that folder and best weights under `PML/artifacts/carec-colab`. No separate Drive location is required. No upload, archive creation or notebook execution was performed.
