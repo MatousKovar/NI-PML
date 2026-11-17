@@ -354,3 +354,9 @@ Prepared a separate remaining-condition training notebook using the [same pinned
 ## Colab Python version selection, 2026-11-14
 
 The user hit the notebook Python-version guard before installation. The [official runtime FAQ](https://research.google.com/colaboratory/runtime-version-faq.html) documents Runtime > Change runtime type > Runtime Version. The [Colab Python 3.13 upgrade notice](https://github.com/googlecolab/colabtools/issues/6081) identifies 2026.07 and 2026.04 as Python 3.12 runtimes. Added 2026.07 selection instructions to the notebook. Actual user Python version and successful runtime switch are not yet confirmed. No cells were executed.
+
+## Teacher-recommended related work, 2026-11-17
+
+- Verified the teacher's exact [BLaIR preprint, v1](https://arxiv.org/abs/2403.03952v1), submitted 2024-03-06. *Bridging Language and Items for Retrieval and Recommendation* introduces recommendation-oriented sentence encoders trained using item metadata and natural-language context, alongside Amazon Reviews 2023. Relevant background for domain-specific encoder training; citing it does not require replacing the fixed Amazon 2018 split or adding another encoder.
+- Verified [Matryoshka Representation Learning](https://arxiv.org/abs/2205.13147). It learns representations usable at multiple sizes. Distinguish this training approach from post-hoc PCA; arbitrary truncation is not an equivalent compression method for every checkpoint. The manuscript currently cites fMRLRec but neither of the two teacher-recommended papers directly.
+- Manuscript review confirms Baselines still specifies INSTRUCTOR-XL, LightGCN and only 64/128/256, while methodology names three newer instruction-paired checkpoints and content-only evaluation. Proposed reconciliation, native references, exact prompt documentation and resource reporting are recorded in PROJECT_TODO.md. No manuscript or experiment changes made.

@@ -195,3 +195,25 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - [ ] User: run the four remaining conditions individually, save notebook metric outputs, and copy selected weights back when complete.
 
 - [x] 2026-11-14: use the user-confirmed root Drive folder `PML` for Colab inputs and outputs; update notebook paths and transfer instructions. Archive creation and upload remain user steps. No cells or tests were run.
+
+## E5-large instructed phase-two diagnosis, 2026-11-16
+
+- Read-only inspection confirms the local instructed E5-large folder contains only `phase1-best.pt`, and the saved notebook output reports evaluation of that checkpoint. The local `run_experiment` defaults to `phase2_only=False`, so any existing checkpoint enters evaluation-only reuse. Starting the missing second phase requires passing `phase2_only=True`, as the Qwen launch already does. The Colab function separately detects this checkpoint state automatically. No code, notebook cells, training, evaluation, or tests were run or changed.
+
+## INSTRUCTOR instructed MPS failure, 2026-11-17
+
+- Saved notebook traceback shows MPS out of memory during instructed INSTRUCTOR phase one at epoch 35, in the full-graph `torch.stack(embeddings_list, dim=1)`. Reported allocations were 9.34 GB plus 19.87 GB other allocations against a 30.19 GB limit, with another approximately 1 GB requested. This confirms the allocation failure, not a memory-leak cause.
+- Proposed first recovery is a fresh kernel and only the affected condition. Existing checkpoint reuse evaluates phase one rather than resuming it; exact phase-one resume is unavailable with weights-only persistence. If clean execution still fails, investigate memory retention and replacing the layer stack with a running sum on the model instance. Smaller batches do not remove the full-graph allocation. No notebook code, cells, tests, or training were executed or changed.
+
+## Manuscript changes proposed from teacher feedback, 2026-11-17
+
+- Replace the stale Baselines paragraph with the agreed content-only comparison and CARec across nine encoder/input conditions. Treat LightGCN and original INSTRUCTOR-XL as optional unless separately confirmed.
+- Add the six exact checkpoint IDs and native dimensions, explicitly list the three instruction pairs, preserve required model formatting in the no-task-instruction conditions, and report exact prompts. Paired conditions test instruction use at inference, not the causal effect of instruction tuning.
+- Explicitly include each checkpoint's uncompressed native reference and the proposed shared 64/128/256/384 PCA sweep. Native 384 and PCA-to-384 are different conditions. Use common PCA as the main proposed protocol; any supported Matryoshka truncation should be a separate ablation.
+- Cite BLaIR and original MRL directly. Adding BLaIR as an experimental encoder is optional and unconfirmed.
+- Explain dimension-dependent user tables and MLP capacity, measure cache and checkpoint bytes separately, and distinguish retained full caches from compressed deployment artifacts. Define content-only profiles, training-only histories, shared candidate/history masks, and warm/cold evaluation. Existing split-overlap issues remain unresolved.
+- These are recommendations for the user's review, not newly confirmed experimental commitments. The LaTeX and BibTeX remain unchanged.
+
+- [x] 2026-11-17: replace the manuscript's stale Baselines paragraph with CARec versus content-only across nine input conditions, each with a native uncompressed reference. Add the six exact checkpoints, native dimensions and instruction modes in a table, plus the distinction between inference instructions and instruction tuning. Remove the old LightGCN/INSTRUCTOR-XL commitments. Other proposed changes remain pending. LaTeX compilation unavailable because neither pdflatex nor latexmk is installed; no notebook cells or experiments ran.
+
+- 2026-11-17: commit manuscript changes in the separate LaTeX repository as `e336dc5`, `Specify encoders and update recommendation baselines`. User-authorized push to Overleaf `origin/main` failed twice with HTTP 503, `no healthy upstream`. Commit remains local; retry push when Overleaf Git service recovers.
