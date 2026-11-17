@@ -217,3 +217,10 @@ The new section passed basic brace and citation-key checks. PDF compilation was 
 - [x] 2026-11-17: replace the manuscript's stale Baselines paragraph with CARec versus content-only across nine input conditions, each with a native uncompressed reference. Add the six exact checkpoints, native dimensions and instruction modes in a table, plus the distinction between inference instructions and instruction tuning. Remove the old LightGCN/INSTRUCTOR-XL commitments. Other proposed changes remain pending. LaTeX compilation unavailable because neither pdflatex nor latexmk is installed; no notebook cells or experiments ran.
 
 - 2026-11-17: commit manuscript changes in the separate LaTeX repository as `e336dc5`, `Specify encoders and update recommendation baselines`. User-authorized push to Overleaf `origin/main` failed twice with HTTP 503, `no healthy upstream`. Commit remains local; retry push when Overleaf Git service recovers.
+
+- [x] 2026-11-17: add a standalone CPU `evaluate_content_only(embedding_name)` function and concise usage notes in the local training notebook. Reuse training-only profiles, existing masks/loaders/metrics, and separate in-memory results. Preserve all existing cells and saved outputs; diff whitespace check passed. No notebook cells or tests ran.
+- [ ] User-run check: execute shared setup/data cells and the content-only definition, then call it with MiniLM. Verify a hand-calculated profile/ranking, warm/cold masks, zero-profile counts and runtime before evaluating all nine conditions. RecBole top-k ties retain current behavior; a cross-backend deterministic tie policy remains open.
+
+- [x] 2026-11-17: integrate content-only evaluation after every local CARec model call, including checkpoint reuse, and show both methods in the final results table. Keep separate timings and preserve existing saved outputs. Diff whitespace check passed; runtime verification remains user-run.
+
+- [x] 2026-11-17: move baseline evaluation out of `run_experiment` into the next line of all nine model cells, per user correction. Keep both methods in the final table. Checked all nine explicit calls and diff whitespace; no notebook execution.

@@ -286,3 +286,17 @@ The standalone notebook includes a user-run archive command for fixed splits, it
 ## Confirmed Drive folder, 2026-11-14
 
 The user has a PML folder at the root of My Drive. Updated the Colab notebook to use `/content/drive/MyDrive/PML`, with the input archive directly in that folder and best weights under `PML/artifacts/carec-colab`. No separate Drive location is required. No upload, archive creation or notebook execution was performed.
+
+## Content-only evaluation function, 2026-11-17
+
+Added `evaluate_content_only(embedding_name)` to the local `src/carec_training.ipynb`. It loads and aligns cached vectors without constructing CARec, averages vectors over training interactions with repeated rows contributing repeatedly, and scores cosine similarity on CPU. Sparse history multiplication avoids a dense interaction matrix. It reuses existing warm/cold loaders, candidate and history masks, and RecBole Recall/NDCG evaluation. Padding is excluded; invalid or zero item vectors fail explicitly. Empty or cancelling user profiles remain eligible with zero scores and reported counts. Ties use the existing RecBole top-k routine; CPU versus MPS tie order is not guaranteed identical. No new tie-breaking policy is introduced for CARec.
+
+Results and timing remain in `content_only_results` and the returned dictionary, with no checkpoint or result files written. The profile timing includes cache loading/alignment. The function is independent of checkpoint presence and does not run automatically with model launches. No notebook cells, tests, evaluation, or training were executed; runtime and hand-checkable score/mask verification remain user steps. The Colab notebook is unchanged.
+
+## Automatic baseline comparison, 2026-11-17
+
+At the user's request, local `run_experiment` now evaluates the matching content-only baseline after CARec evaluation in both training and checkpoint-reuse paths. It stores CARec metrics before starting the baseline, attaches baseline results as `result["content_only"]`, and retains the separate baseline results dictionary. The final session table shows one row per method and variant, with separate durations and no training epochs for the baseline. Existing session entries can use a separately evaluated baseline; otherwise they show only CARec until one is run. No model launch cells or checkpoint rules changed. Rerun the baseline definition, run_experiment definition, desired launch cells and final table to use the new behavior. No notebook cells, tests, training or evaluations were executed by the agent.
+
+## Separate baseline launch lines, 2026-11-17
+
+The user's correction supersedes automatic baseline evaluation inside `run_experiment`. Each of the nine local model cells now calls `evaluate_content_only` on the next line after its CARec call, using the same embedding file and a separate result variable. `run_experiment` returns CARec results only. The final table retrieves baseline metrics from `content_only_results` and still shows both methods. No notebook cells or tests were run.
