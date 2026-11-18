@@ -360,3 +360,27 @@ The user hit the notebook Python-version guard before installation. The [officia
 - Verified the teacher's exact [BLaIR preprint, v1](https://arxiv.org/abs/2403.03952v1), submitted 2024-03-06. *Bridging Language and Items for Retrieval and Recommendation* introduces recommendation-oriented sentence encoders trained using item metadata and natural-language context, alongside Amazon Reviews 2023. Relevant background for domain-specific encoder training; citing it does not require replacing the fixed Amazon 2018 split or adding another encoder.
 - Verified [Matryoshka Representation Learning](https://arxiv.org/abs/2205.13147). It learns representations usable at multiple sizes. Distinguish this training approach from post-hoc PCA; arbitrary truncation is not an equivalent compression method for every checkpoint. The manuscript currently cites fMRLRec but neither of the two teacher-recommended papers directly.
 - Manuscript review confirms Baselines still specifies INSTRUCTOR-XL, LightGCN and only 64/128/256, while methodology names three newer instruction-paired checkpoints and content-only evaluation. Proposed reconciliation, native references, exact prompt documentation and resource reporting are recorded in PROJECT_TODO.md. No manuscript or experiment changes made.
+
+## Native comparison results inspected, 2026-11-17
+
+Current saved outputs in `src/carec_training.ipynb` now contain all 18 method/condition rows, superseding the earlier partial-output audit. These are user-run saved metrics, not an independent rerun. All phase epochs are unknown in the checkpoint-reuse summary; displayed durations are preparation/loading/evaluation, not original training.
+
+| Native condition | CARec warm NDCG@10 | Content-only warm NDCG@10 | CARec cold NDCG@10 | Content-only cold NDCG@10 |
+| --- | ---: | ---: | ---: | ---: |
+| MiniLM | 0.0619 | 0.0194 | 0.0304 | 0.0290 |
+| MPNet | 0.0626 | 0.0183 | 0.0326 | 0.0300 |
+| E5-base | 0.0630 | 0.0275 | 0.0305 | 0.0332 |
+| Qwen without instruction | 0.0627 | 0.0142 | 0.0352 | 0.0259 |
+| Qwen with instruction | 0.0630 | 0.0143 | 0.0310 | 0.0264 |
+| E5-large without instruction | 0.0631 | 0.0247 | 0.0321 | 0.0329 |
+| E5-large with instruction | 0.0630 | 0.0203 | 0.0290 | 0.0294 |
+| INSTRUCTOR without instruction | 0.0628 | 0.0172 | 0.0287 | 0.0258 |
+| INSTRUCTOR with instruction | 0.0631 | 0.0164 | 0.0265 | 0.0256 |
+
+CARec warm NDCG@10 spans 0.0619-0.0631, approximately 1.9% relative spread, while cold spans 0.0265-0.0352, approximately 32.8%. In all three instruction pairs the instructed CARec condition has lower cold NDCG@10, by approximately 11.9% for Qwen, 9.7% for E5-large and 7.7% for INSTRUCTOR, relative to its uninstructed partner. Content-only exceeds CARec cold NDCG@10 for E5-base and both E5-large modes, so collaborative alignment is not uniformly beneficial across metrics and conditions. Warm content-only scores vary substantially more than warm CARec scores.
+
+Interpretation proposal: collaborative alignment may reduce sensitivity to encoder choice on warm items, while cold evaluation retains larger differences. Aggregate similarities do not establish identical rankings, statistical equivalence, a causal explanation, or a general disadvantage of instructions. Only one checkpoint per condition is evaluated here, native dimensions differ and the known split overlaps remain. Per-user metrics/ranking overlaps and additional seeds would distinguish close means and variation; none were computed in this inspection. A smaller native MiniLM performing close to larger encoders motivates the agreed compression study but does not establish compression performance.
+
+## Origin of pair overlap, 2026-11-18
+
+Static source inspection locates the overlap mechanism in pinned `external/CARec/data/utils.py`: preprocessing at lines 237-242 deduplicates product metadata only, retaining repeated user-item interaction rows. `split_data` at lines 447-467 groups by user, shuffles rows and slices them into train/validation/test without grouping repeated item IDs. The data notebook calls that unchanged function with user grouping at `src/data_exploration.ipynb:803`. Distinct source rows for the same user-item pair can therefore enter different warm partitions; this is pair overlap, not copying one source row across partitions. Cold-item separation is a separate step and the saved manifest reports it verified. No preprocessing, counts, or tests were rerun.

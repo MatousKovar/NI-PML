@@ -300,3 +300,13 @@ At the user's request, local `run_experiment` now evaluates the matching content
 ## Separate baseline launch lines, 2026-11-17
 
 The user's correction supersedes automatic baseline evaluation inside `run_experiment`. Each of the nine local model cells now calls `evaluate_content_only` on the next line after its CARec call, using the same embedding file and a separate result variable. `run_experiment` returns CARec results only. The final table retrieves baseline metrics from `content_only_results` and still shows both methods. No notebook cells or tests were run.
+
+## Persistent evaluation results, 2026-11-18
+
+At the user's explicit request, the local training notebook now saves CARec and content-only results separately as `results/carec/<dataset>/<variant>/carec.json` and `content-only.json`. This supersedes the earlier no-result-files rule while preserving weights-only model checkpoints. JSON records include schema version, dataset, embedding filename, method, save time and the available result dictionary. Temporary files are replaced only after serialization succeeds. Historical checkpoint settings cannot be recovered from these files.
+
+Both evaluation functions save on completion. The final cell also exports existing session dictionaries, loads all saved records and writes `summary.csv`. It supports results for either method independently and restores the table after kernel restart without model evaluation. Summary columns are variant, method, dimension and warm/cold metrics; minutes and phase epoch columns are removed. Detailed timing/training fields remain in JSON when available. Definition cells preserve existing session dictionaries on rerun. Only the obsolete final table output was cleared; per-model saved outputs remain. No notebook cells, evaluation, training or tests were run. To preserve current live results now, execute the new saved-results definition and final table cells before restarting the kernel.
+
+## Confirmed overlap policy, 2026-11-18
+
+The user accepts the warm user-item pair overlaps because preprocessing calls the original pinned CARec splitter. Preserve the existing dataset and split; do not deduplicate or retrain to remove overlap. Describe this inherited protocol limitation in the manuscript and avoid claiming verified identity with the authors' exact split.
