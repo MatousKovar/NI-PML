@@ -51,18 +51,22 @@ Po kontrole součtů, opětovného načtení a shodného přepočítání ze vzo
 
 Data, cache, checkout CARec a lokální prostředí ignoruje Git. `requirements.txt` obsahuje přesné verze hlavních knihoven i jejich závislostí z ověřeného prostředí na Macu s Pythonem 3.11.
 
+## Experimenty
+
+Notebooky a sdílený Python kód jsou v `src/`. `helper.py` obsahuje import CARec a třídu `Experiment` pro načtení splitu, trénování, evaluaci a ukládání výsledků. `carec_training.ipynb` nastavuje hyperparametry a spouští nativní embeddingy. Funkce specifické pro jediný notebook zůstávají v něm. Kompresní notebook zatím není vytvořen.
+
 ## Kontrola a importy
 
 ```bash
-.venv/bin/python -m benchmarks.check_environment
+.venv/bin/python -c 'from src.helper import load_carec; print(load_carec().commit)'
 ```
 
-Kontrola vypíše verze a commit, načte deset řádků obou původních souborů nebo uloženého ověřeného vzorku a zkusí grafovou vrstvu. Na malé syntetické grafové ukázce ověří také loss obou fází CARec a tvar skóre na CPU. Dostupné MPS vyzkouší pro samotnou grafovou vrstvu. Nepočítá metriky, negeneruje embeddingy a nespouští preprocessing celého datasetu. Bez dat lze použít `--skip-data`, pro jiné umístění dat `--data-dir`.
+Příkaz ověří připnutý checkout a import CARec. Nespouští trénování ani evaluaci.
 
 Ve vlastním kódu spuštěném z kořene repozitáře:
 
 ```python
-from benchmarks.carec import load_carec
+from src.helper import load_carec
 from recbole.config import Config
 from recbole.trainer import Trainer
 

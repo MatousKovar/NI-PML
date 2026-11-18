@@ -22,12 +22,12 @@ if ! .venv/bin/python -m pip --version >/dev/null 2>&1; then
 fi
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -m pip check
-carec_url="$(.venv/bin/python -c 'from benchmarks.carec import CAREC_URL; print(CAREC_URL)')"
-carec_commit="$(.venv/bin/python -c 'from benchmarks.carec import CAREC_COMMIT; print(CAREC_COMMIT)')"
+carec_url="$(.venv/bin/python -c 'from src.helper import CAREC_URL; print(CAREC_URL)')"
+carec_commit="$(.venv/bin/python -c 'from src.helper import CAREC_COMMIT; print(CAREC_COMMIT)')"
 if [[ ! -d external/CARec ]]; then
     git clone --no-checkout "$carec_url" external/CARec
     git -C external/CARec checkout --detach "$carec_commit"
 fi
 
 .venv/bin/python -m ipykernel install --user --name ni-pml --display-name 'NI-PML benchmarks'
-.venv/bin/python -m benchmarks.check_environment
+.venv/bin/python -c 'from src.helper import load_carec; print("CARec commit:", load_carec().commit)'

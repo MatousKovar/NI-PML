@@ -310,3 +310,13 @@ Both evaluation functions save on completion. The final cell also exports existi
 ## Confirmed overlap policy, 2026-11-18
 
 The user accepts the warm user-item pair overlaps because preprocessing calls the original pinned CARec splitter. Preserve the existing dataset and split; do not deduplicate or retrain to remove overlap. Describe this inherited protocol limitation in the manuscript and avoid claiming verified identity with the authors' exact split.
+
+## Shared helper module, 2026-11-18
+
+User requires notebooks and Python experiment scripts under `src/`, with shared functions in `src/helper.py` and functions used by only one notebook kept in that notebook. This supersedes the proposed benchmarks/carec_experiments.py and separate compression module. PCA-specific functions will belong to the future compression notebook unless another notebook needs them.
+
+Extracted the native notebook's model construction, phase training, both evaluators and JSON persistence into `helper.Experiment`. Its constructor accepts paths and hyperparameters, loads the existing fixed dataset and evaluation loaders once, and owns the former notebook globals. Notebook model cells call `experiment.run_experiment` then `experiment.evaluate_content_only`; the final table stays in the notebook. Existing checkpoint/result names, hyperparameters, masking and separate launch lines are unchanged. Recreating Experiment loads data but does not train or evaluate.
+
+Moved the shared pinned-upstream loader from benchmarks/carec.py into helper.py and removed the empty benchmarks package. Updated the data notebook import, setup script and README. Setup now checks the actual loader import instead of referencing the absent benchmarks.check_environment module; this is an import check, not the historical numerical smoke checks. No upstream source, dataset, checkpoint or saved results were changed.
+
+Verification was static only: all notebook code and helper.py parse; seven extracted function bodies match their former ASTs after reversing instance-state substitutions; no unresolved module globals were found; saved model outputs match the pre-refactor notebook; diff whitespace check passed. No imports, notebook cells, training, evaluation or runtime tests were executed. Runtime verification remains user-run. Compression notebook and PCA implementation are the next separate step.
