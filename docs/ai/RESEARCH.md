@@ -384,3 +384,11 @@ Interpretation proposal: collaborative alignment may reduce sensitivity to encod
 ## Origin of pair overlap, 2026-11-18
 
 Static source inspection locates the overlap mechanism in pinned `external/CARec/data/utils.py`: preprocessing at lines 237-242 deduplicates product metadata only, retaining repeated user-item interaction rows. `split_data` at lines 447-467 groups by user, shuffles rows and slices them into train/validation/test without grouping repeated item IDs. The data notebook calls that unchanged function with user grouping at `src/data_exploration.ipynb:803`. Distinct source rows for the same user-item pair can therefore enter different warm partitions; this is pair overlap, not copying one source row across partitions. Cold-item separation is a separate step and the saved manifest reports it verified. No preprocessing, counts, or tests were rerun.
+
+## PCA implementation reference, 2026-11-18
+
+The installed scikit-learn pin is 1.6.1. Its [PCA documentation](https://scikit-learn.org/1.6/modules/generated/sklearn.decomposition.PCA.html) describes centered PCA without automatic feature scaling, explicit full-SVD and optional whitening. The prepared notebook fixes svd_solver=full and whiten=False, uses a training-item-only fit and post-projection L2 normalization. These are prepared experimental choices, not measured compression results. Source selection uses the saved native cold NDCG@10 values above: Qwen without instruction 0.0352, MPNet 0.0326, E5-large without instruction 0.0321. Selection on observed test metrics makes the shortlist exploratory.
+
+## Related-work additions, 2026-11-18
+
+Rechecked the teacher-linked [BLaIR v1](https://arxiv.org/abs/2403.03952v1) and original [MRL preprint](https://arxiv.org/abs/2205.13147) against their arXiv records. Added both to manuscript Related Work and BibTeX as arXiv references, without inferring venue metadata. BLaIR provides domain-specific recommendation encoder background. MRL learns useful nested representations during training, while the project applies post-hoc training-item PCA to frozen encoders. Kept fMRLRec as the recommendation-specific follow-up. Applied unslop; citation-key uniqueness/resolution, braces and diff whitespace checks passed. PDF compilation not performed.
