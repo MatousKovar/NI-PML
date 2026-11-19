@@ -99,8 +99,6 @@ class Experiment:
         self.runs_dir = self.project_root / "artifacts/carec" / dataset_id
         self.results_dir = self.project_root / "results/carec" / dataset_id
         self.carec = load_carec()
-        self.experiment_results = {}
-        self.content_only_results = {}
         self._load_data()
 
     def _load_data(self):
@@ -174,11 +172,7 @@ class Experiment:
         with np.load(embedding_path, allow_pickle=False) as saved:
             item_ids = saved["item_ids"]
             vectors = saved["embeddings"]
-            metadata = {
-                "embedding_file": str(embedding_path.relative_to(self.project_root)),
-                "encoder": str(saved["model_id"]), "revision": str(saved["revision"]),
-                "prompt": str(saved["prompt"]), "dimension": vectors.shape[1],
-            }
+            dimension = vectors.shape[1]
         rows = {product_id: row for row, product_id in enumerate(item_ids)}
         assert len(rows) == len(item_ids), "Duplicate cache IDs"
         assert len(vectors) == len(item_ids), "Cache row count differs"
@@ -189,7 +183,6 @@ class Experiment:
             aligned[item_id] = vectors[rows[product_id]]
 
         config = deepcopy(self.base_config)
-        dimension = metadata["dimension"]
         config["seed"] = self.seed
         config["encoder"] = "LightGCN"
         config["num_layers"] = 2
@@ -223,7 +216,7 @@ class Experiment:
 
         encoder.gcn_conv.forward = sparse_forward
         model.uniformity = cpu_uniformity
-        return model, config, metadata
+        return model, config, dimension
 
     @torch.no_grad()
     def evaluate_carec(self, model, loader, config, cold_only=False):
@@ -359,7 +352,6 @@ class Experiment:
             "scoring_seconds": perf_counter() - scoring_started,
             "total_seconds": perf_counter() - started,
         }
-        self.content_only_results[Path(embedding_name).stem] = result
         self.save_experiment_result(embedding_name, "Content-only", result)
         display(pd.DataFrame(test).T)
         print(f"Zero-profile users: {zero_profile_users}")
@@ -445,7 +437,7 @@ class Experiment:
         if phase2_only and not (run_dir / "phase1-best.pt").is_file():
             raise FileNotFoundError(f"Phase 2 requires {run_dir / 'phase1-best.pt'}")
         started = perf_counter()
-        model, config, metadata = self.prepare_model(embedding_name)
+        model, config, dimension = self.prepare_model(embedding_name)
         if phase2_only and not (run_dir / "phase2-best.pt").is_file():
             checkpoint_path = run_dir / "phase1-best.pt"
             model.load_state_dict(torch.load(checkpoint_path, map_location="cpu", weights_only=True))
@@ -472,8 +464,7 @@ class Experiment:
             training = {"phase1": {"best_epoch": None}, "phase2": {"best_epoch": None}}
         else:
             run_dir.mkdir(parents=True, exist_ok=True)
-            self.experiment_results.pop(variant, None)
-            print(f"{embedding_name}: {metadata['dimension']} dimensions, model {self.device}, graph CPU")
+            print(f"{embedding_name}: {dimension} dimensions, model {self.device}, graph CPU")
             print(f"Model directory: {run_dir}")
             training = {}
             training["phase1"] = self.train_phase(model, config, 1, self.phase1_epochs, run_dir)
@@ -483,10 +474,9 @@ class Experiment:
             "cold": self.evaluate_carec(model, self.evaluation_loaders["cold"], config, cold_only=True),
         }
         result = {
-            "dimension": metadata["dimension"], "training": training, "test": test,
+            "dimension": dimension, "training": training, "test": test,
             "total_seconds": perf_counter() - started, "run_dir": str(run_dir),
         }
-        self.experiment_results[variant] = result
         self.save_experiment_result(embedding_name, "CARec", result)
         print("CARec")
         display(pd.DataFrame(test).T)

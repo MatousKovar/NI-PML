@@ -277,3 +277,11 @@ Proposed next order: preserve the full native results/provenance; finish missing
 - [ ] User next: run PCA notebook setup/definitions and three Prepare cells, then Qwen PCA 64. After its first completed CARec/content-only pair, continue with the remaining eight run cells and comparison export. All nine long runs are intentional; no native retraining is needed.
 
 - [x] 2026-11-18: shorten manuscript Data, Encoder inputs and Training at user request; remove detailed data/revision tables. Keep exact prompt, paired modes, concise compression training settings and code reference. No code/results changed; static references/braces/diff checks passed.
+
+## Cleanup inventory, 2026-11-18
+
+- [x] 2026-11-18: simplify helper.py at user request. Remove unused in-memory result dictionaries; keep JSON persistence and returned results. Return the embedding dimension directly from prepare_model instead of unused encoder metadata. Static syntax and diff checks passed; no experiments or notebook cells ran.
+
+Read-only disk inspection, no files removed. Regenerable candidates are the obsolete benchmarks/__pycache__ directory, other __pycache__/.ipynb_checkpoints, .DS_Store, empty .vscode, .cache/uv around 913 MB, and artifacts/recbole around 22 MB while no kernel/training uses it. Hugging Face cache around 3.9 GB can be recreated by downloads; preserve it if encoder inference will be repeated. The remaining raw data/Electronics.json is around 11 GB; its removal requires retaining/backing up verified data/processed, including sampled interactions and metadata. Existing manifest verification is historical; no fresh checksum audit ran in this inspection.
+
+Keep src, prepared data, artifacts/embeddings, artifacts/pca, artifacts/carec, results, external/CARec, .git and the separate LaTeX repo. .venv/bin/python resolves into .python, so deleting .python breaks the current environment. Do not remove phase-one weights as a cleanup shortcut: existing phase2_only launch calls require their presence even when phase-two weights exist. Current user edits in the compression notebook and LaTeX repo remain untouched.
